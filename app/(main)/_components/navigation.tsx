@@ -2,6 +2,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import React from "react";
 
 import { INavigation } from "@/interfaces/interface";
+import UserItem from "./user-item";
 
 const Navigation = ({ minimize }: INavigation) => {
   return (
@@ -13,7 +14,7 @@ const Navigation = ({ minimize }: INavigation) => {
         <ChevronLeftIcon className="h-6 w-6" />
       </div>
       <div>
-        <p>Action items</p>
+        <UserItem />
       </div>
       <div className="mt-4">
         <p>Documents</p>
