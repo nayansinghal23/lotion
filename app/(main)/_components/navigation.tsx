@@ -1,10 +1,14 @@
-import { ChevronLeftIcon } from "lucide-react";
 import React from "react";
+import { ChevronLeftIcon } from "lucide-react";
+import { useQuery } from "convex/react";
 
 import { INavigation } from "@/interfaces/interface";
+import { api } from "@/convex/_generated/api";
 import UserItem from "./user-item";
 
 const Navigation = ({ minimize }: INavigation) => {
+  const documents = useQuery(api.documents.get);
+
   return (
     <div className="h-full w-full relative bg-neutral-300 dark:bg-[#2b2929]">
       <div
@@ -17,7 +21,9 @@ const Navigation = ({ minimize }: INavigation) => {
         <UserItem />
       </div>
       <div className="mt-4">
-        <p>Documents</p>
+        {documents?.map((document) => (
+          <p key={document._id}>{document.title}</p>
+        ))}
       </div>
     </div>
   );
