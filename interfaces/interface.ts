@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import React from "react";
 
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 export interface INavigation {
   minimize: () => void;
@@ -22,4 +22,10 @@ export interface ItemProps {
   label: string;
   onClick: () => void;
   icon: LucideIcon;
+}
+
+export interface DocumentListProps {
+  parentDocumentId?: Id<"documents">;
+  level?: number;
+  data?: Doc<"documents">[];
 }
