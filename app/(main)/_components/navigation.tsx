@@ -1,13 +1,27 @@
 import React from "react";
-import { ChevronLeftIcon } from "lucide-react";
-import { useQuery } from "convex/react";
+import { ChevronLeftIcon, PlusCircle, Search, Settings } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { toast } from "sonner";
 
 import { INavigation } from "@/interfaces/interface";
 import { api } from "@/convex/_generated/api";
 import UserItem from "./user-item";
+import Item from "./item";
 
 const Navigation = ({ minimize }: INavigation) => {
   const documents = useQuery(api.documents.get);
+  const create = useMutation(api.documents.create);
+
+  const handleCreate = () => {
+    const promise = create({
+      title: "Untitled",
+    });
+    toast.promise(promise, {
+      loading: "Creating a mew note...",
+      success: "New note created!",
+      error: "Failed to create a new note.",
+    });
+  };
 
   return (
     <div className="h-full w-full relative bg-neutral-300 dark:bg-[#2b2929]">
@@ -19,6 +33,9 @@ const Navigation = ({ minimize }: INavigation) => {
       </div>
       <div>
         <UserItem />
+        <Item label="Search" icon={Search} isSearch onClick={() => {}} />
+        <Item label="Settings" icon={Settings} onClick={() => {}} />
+        <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
       <div className="mt-4">
         {documents?.map((document) => (
