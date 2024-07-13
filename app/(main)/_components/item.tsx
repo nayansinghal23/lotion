@@ -1,13 +1,27 @@
 import { MouseEvent } from "react";
-import { ItemProps } from "@/interfaces/interface";
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { toast } from "sonner";
+import {
+  ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
+  Plus,
+  Trash,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
+import { useUser } from "@clerk/clerk-react";
 
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { ItemProps } from "@/interfaces/interface";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Item = ({
   id,
@@ -21,8 +35,10 @@ const Item = ({
   onExpand,
   expanded,
 }: ItemProps) => {
+  const { user } = useUser();
   const router = useRouter();
   const create = useMutation(api.documents.create);
+  const archive = useMutation(api.documents.archive);
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
   const handleExpand = (event: MouseEvent<HTMLDivElement>) => {
@@ -41,7 +57,7 @@ const Item = ({
         if (!expanded) {
           onExpand?.();
         }
-        router.push(`/documents/${documentId}`);
+        // router.push(`/documents/${documentId}`);
         toast.promise(promise, {
           loading: "Creating a mew note...",
           success: "New note created!",
@@ -51,6 +67,19 @@ const Item = ({
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const onArchive = (event: MouseEvent<HTMLDivElement>) => {
+    if (!id) return;
+    event.stopPropagation();
+    const promise = archive({
+      id,
+    });
+    toast.promise(promise, {
+      loading: "Moving to trash...",
+      success: "Note moved to trash!",
+      error: "Failed to archive note.",
+    });
   };
 
   return (
@@ -84,12 +113,37 @@ const Item = ({
         </kbd>
       )}
       {!!id && (
-        <div
-          className="ml-auto flex items-center gap-x-2"
-          role="button"
-          onClick={handleAddSubPages}
-        >
-          <div className="opacity-0 hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600">
+        <div className="ml-auto flex items-center gap-x-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <div
+                role="button"
+                className="opacity-0 hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+              >
+                <MoreHorizontal className="h-4 w-4 to-muted-foreground" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-60"
+              align="start"
+              side="right"
+              forceMount
+            >
+              <DropdownMenuItem onClick={onArchive}>
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="text-xs to-muted-foreground p-2">
+                Last edited by: {user?.fullName}{" "}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <div
+            className="opacity-0 hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            role="button"
+            onClick={handleAddSubPages}
+          >
             <Plus className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
