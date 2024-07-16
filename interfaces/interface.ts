@@ -20,7 +20,7 @@ export interface ItemProps {
   level?: number;
   onExpand?: () => void;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   icon: LucideIcon;
 }
 
@@ -28,4 +28,9 @@ export interface DocumentListProps {
   parentDocumentId?: Id<"documents">;
   level?: number;
   data?: Doc<"documents">[];
+}
+
+export interface ConfirmModalProps {
+  children: React.ReactNode;
+  onConfirm: () => void;
 }

@@ -78,3 +78,73 @@ export const archive = mutation({
     return archivedDocument;
   },
 });
+
+export const getTrash = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const userId = identity.subject;
+    const documents = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .filter((q) => q.eq(q.field("isArchived"), true))
+      .order("desc")
+      .collect();
+    return documents;
+  },
+});
+
+export const restore = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const userId = identity.subject;
+    const existingDocument = await ctx.db.get(args.id);
+    if (!existingDocument) throw new Error("Not found");
+    if (existingDocument.userId !== userId) throw new Error("Unauthorized");
+
+    async function makeChildrenUnarchive(parent: Doc<"documents">) {
+      const children = await ctx.db
+        .query("documents")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("parentDocument"), parent._id))
+        .collect();
+      for (let child of children) {
+        await makeChildrenUnarchive(child);
+        await ctx.db.patch(child._id, {
+          isArchived: false,
+        });
+      }
+    }
+    makeChildrenUnarchive(existingDocument);
+
+    const document = await ctx.db.patch(existingDocument._id, {
+      isArchived: false,
+      parentDocument: undefined,
+    });
+    return document;
+  },
+});
+
+export const remove = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const userId = identity.subject;
+    const existingDocument = await ctx.db.get(args.id);
+    if (!existingDocument) throw new Error("Not found");
+    if (existingDocument.userId !== userId) throw new Error("Unauthorized");
+
+    const document = await ctx.db.delete(args.id);
+    return document;
+  },
+});
