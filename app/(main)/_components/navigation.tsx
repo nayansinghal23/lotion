@@ -17,12 +17,15 @@ import {
 } from "@/components/ui/popover";
 import { INavigation } from "@/interfaces/interface";
 import { api } from "@/convex/_generated/api";
+import { useAppDispatch } from "@/redux/hooks";
+import { toggleSearch } from "@/redux/openSearchSlice";
 import UserItem from "./user-item";
 import Item from "./item";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
 
 const Navigation = ({ minimize }: INavigation) => {
+  const dispatch = useAppDispatch();
   const create = useMutation(api.documents.create);
 
   const handleCreate = () => {
@@ -46,7 +49,12 @@ const Navigation = ({ minimize }: INavigation) => {
       </div>
       <div>
         <UserItem />
-        <Item label="Search" icon={Search} isSearch onClick={() => {}} />
+        <Item
+          label="Search"
+          icon={Search}
+          isSearch
+          onClick={() => dispatch(toggleSearch(true))}
+        />
         <Item label="Settings" icon={Settings} onClick={() => {}} />
         <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
