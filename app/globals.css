@@ -2,10 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 html,
 body,
 :root {
   height: 100%;
+}
+
+#contentEditableDiv:read-write:focus {
+  outline: none;
+}
+
+#moveTo {
+  box-shadow:
+    rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
+    rgba(15, 15, 15, 0.2) 0px 3px 6px,
+    rgba(15, 15, 15, 0.4) 0px 9px 24px;
+  transform: translate(-50%, -50%);
+  width: 85%;
 }
 
 @layer base {
@@ -78,5 +95,11 @@ body,
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  #moveTo {
+    width: 380px;
   }
 }

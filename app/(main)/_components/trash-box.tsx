@@ -32,10 +32,10 @@ const TrashBox = () => {
     documentId: Id<"documents">
   ) => {
     event.stopPropagation();
-    const promsie = restore({
+    const promise = restore({
       id: documentId,
     });
-    toast.promise(promsie, {
+    toast.promise(promise, {
       loading: "Restoring note...",
       success: "Note restored!",
       error: "Failed to restore note.",
@@ -43,10 +43,10 @@ const TrashBox = () => {
   };
 
   const onRemove = (documentId: Id<"documents">) => {
-    const promsie = remove({
+    const promise = remove({
       id: documentId,
     });
-    toast.promise(promsie, {
+    toast.promise(promise, {
       loading: "Deleting note...",
       success: "Note deleted!",
       error: "Failed to delete note.",

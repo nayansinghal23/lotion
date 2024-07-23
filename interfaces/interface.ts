@@ -34,3 +34,7 @@ export interface ConfirmModalProps {
   children: React.ReactNode;
   onConfirm: () => void;
 }
+
+export interface BannerProps {
+  documentId: Id<"documents">;
+}

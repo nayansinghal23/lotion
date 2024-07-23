@@ -4,6 +4,7 @@ import {
   ChevronDown,
   ChevronRight,
   MoreHorizontal,
+  Move,
   Plus,
   Trash,
 } from "lucide-react";
@@ -22,6 +23,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAppDispatch } from "@/redux/hooks";
+import { toggleMoveToModal } from "@/redux/moveToSlice";
+import { selectedDocumentId } from "@/redux/selectedDocumentIdSlice";
 
 const Item = ({
   id,
@@ -35,6 +39,7 @@ const Item = ({
   onExpand,
   expanded,
 }: ItemProps) => {
+  const dispatch = useAppDispatch();
   const { user } = useUser();
   const router = useRouter();
   const create = useMutation(api.documents.create);
@@ -82,6 +87,13 @@ const Item = ({
     });
   };
 
+  const moveTo = (event: MouseEvent<HTMLDivElement>) => {
+    if (!id) return;
+    event.stopPropagation();
+    dispatch(toggleMoveToModal(true));
+    dispatch(selectedDocumentId(id));
+  };
+
   return (
     <div
       onClick={onClick}
@@ -115,7 +127,7 @@ const Item = ({
       {!!id && (
         <div className="ml-auto flex items-center gap-x-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuTrigger asChild>
               <div
                 role="button"
                 className="opacity-0 hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
@@ -132,6 +144,11 @@ const Item = ({
               <DropdownMenuItem onClick={onArchive}>
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={moveTo}>
+                <Move className="h-4 w-4 mr-2" />
+                Move to
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="text-xs to-muted-foreground p-2">
