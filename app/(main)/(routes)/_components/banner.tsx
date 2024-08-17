@@ -4,7 +4,6 @@ import { toast } from "sonner";
 
 import { BannerProps } from "@/interfaces/interface";
 import { api } from "@/convex/_generated/api";
-import { Button } from "@/components/ui/button";
 import ConfirmModal from "@/components/modals/confirm-modal";
 
 const Banner = ({ documentId }: BannerProps) => {
@@ -38,22 +37,16 @@ const Banner = ({ documentId }: BannerProps) => {
   return (
     <div className="w-full bg-red-500 text-center text-sm p-2 text-white flex items-center justify-center gap-x-2">
       <p>This page is in the Trash</p>
-      <Button
-        size="sm"
+      <div
         onClick={onRestore}
-        variant="outline"
-        className="border-white bg-transparent hover:bg-primary/5 text-white hover:text-white p-1 px-2 h-auto font-normal"
+        className="border-white rounded-md bg-transparent hover:bg-primary/5 text-white hover:text-white p-1 px-2 h-auto font-normal border border-input hover:text-accent-foreground cursor-pointer"
       >
         Restore page
-      </Button>
+      </div>
       <ConfirmModal onConfirm={onRemove}>
-        <Button
-          size="sm"
-          variant="outline"
-          className="border-white bg-transparent hover:bg-primary/5 text-white hover:text-white p-1 px-2 h-auto font-normal"
-        >
+        <div className="border-white rounded-md bg-transparent hover:bg-primary/5 text-white hover:text-white p-1 px-2 h-auto font-normal border border-input hover:text-accent-foreground cursor-pointer">
           Delete forever
-        </Button>
+        </div>
       </ConfirmModal>
     </div>
   );

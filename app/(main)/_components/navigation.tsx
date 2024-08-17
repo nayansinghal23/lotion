@@ -5,6 +5,7 @@ import {
   PlusCircle,
   Search,
   Settings,
+  Share,
   Trash,
 } from "lucide-react";
 import { useMutation } from "convex/react";
@@ -23,6 +24,7 @@ import UserItem from "./user-item";
 import Item from "./item";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
+import SharedList from "./shared-list";
 
 const Navigation = ({ minimize }: INavigation) => {
   const dispatch = useAppDispatch();
@@ -59,8 +61,12 @@ const Navigation = ({ minimize }: INavigation) => {
         <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
       <div className="mt-4">
-        <DocumentList />
+        <Item onClick={() => {}} icon={Share} label="Shared" />
+        <SharedList />
+      </div>
+      <div className="mt-4">
         <Item onClick={handleCreate} icon={Plus} label="Add a page" />
+        <DocumentList />
         <Popover>
           <PopoverTrigger className="w-full mt-4">
             <Item label="Trash" icon={Trash} />

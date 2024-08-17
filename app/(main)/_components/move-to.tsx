@@ -43,6 +43,7 @@ const MoveTo = () => {
     <div
       id="moveTo"
       className="absolute top-[50%] left-[50%] rounded-md bg-[#DCD9D9] dark:bg-[#353232] backdrop-filter-none overflow-hidden z-[99999]"
+      style={{ pointerEvents: "all" }}
     >
       <div
         className="w-full flex justify-end p-1 hover:cursor-pointer"

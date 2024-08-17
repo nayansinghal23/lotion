@@ -10,15 +10,30 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity || !identity.email) throw new Error("Not authenticated");
 
     const userId = identity.subject;
+    if (args.parentDocument) {
+      const parentDocument = await ctx.db.get(args.parentDocument);
+      if (parentDocument && parentDocument.shared.length > 1) {
+        const document = await ctx.db.insert("documents", {
+          title: args.title,
+          parentDocument: args.parentDocument,
+          userId,
+          isPublished: false,
+          isArchived: false,
+          shared: [...parentDocument.shared],
+        });
+        return document;
+      }
+    }
     const document = await ctx.db.insert("documents", {
       title: args.title,
       parentDocument: args.parentDocument,
       userId,
       isPublished: false,
       isArchived: false,
+      shared: [identity.email],
     });
     return document;
   },
@@ -41,7 +56,29 @@ export const getSidebar = query({
       .filter((q) => q.eq(q.field("isArchived"), false))
       .order("desc")
       .collect();
-    return documents;
+    return documents.filter((q) => q.shared.length <= 1);
+  },
+});
+
+export const getShared = query({
+  args: {
+    parentDocument: v.optional(v.id("documents")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const documents = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("isArchived"), false))
+      .order("desc")
+      .collect();
+    return documents.filter(
+      (q) =>
+        q.shared.length > 1 &&
+        q.shared.includes(identity.email as string) &&
+        q.parentDocument === args.parentDocument
+    );
   },
 });
 
@@ -56,7 +93,7 @@ export const archive = mutation({
     const userId = identity.subject;
     const document = await ctx.db.get(args.id);
     if (!document) return null;
-    if (document.userId !== userId) throw new Error("Unauthorized");
+    if (document.shared.length <= 1 && document.userId !== userId) return null;
 
     const findingAllSubChildren = async (parent: Doc<"documents">) => {
       const children = await ctx.db
@@ -87,11 +124,16 @@ export const getTrash = query({
     const userId = identity.subject;
     const documents = await ctx.db
       .query("documents")
-      .filter((q) => q.eq(q.field("userId"), userId))
       .filter((q) => q.eq(q.field("isArchived"), true))
       .order("desc")
       .collect();
-    return documents;
+    return documents.filter((document) => {
+      if (document.shared.length <= 1) {
+        return document.userId === userId;
+      } else {
+        return document;
+      }
+    });
   },
 });
 
@@ -106,7 +148,11 @@ export const restore = mutation({
     const userId = identity.subject;
     const existingDocument = await ctx.db.get(args.id);
     if (!existingDocument) throw new Error("Not found");
-    if (existingDocument.userId !== userId) throw new Error("Unauthorized");
+    if (
+      existingDocument.shared.length <= 1 &&
+      existingDocument.userId !== userId
+    )
+      return null;
 
     async function makeChildrenUnarchive(parent: Doc<"documents">) {
       const children = await ctx.db
@@ -142,7 +188,11 @@ export const remove = mutation({
     const userId = identity.subject;
     const existingDocument = await ctx.db.get(args.id);
     if (!existingDocument) throw new Error("Not found");
-    if (existingDocument.userId !== userId) throw new Error("Unauthorized");
+    if (
+      existingDocument.shared.length <= 1 &&
+      existingDocument.userId !== userId
+    )
+      return null;
 
     const document = await ctx.db.delete(args.id);
     return document;
@@ -157,11 +207,16 @@ export const getSearch = query({
     const userId = identity.subject;
     const documents = await ctx.db
       .query("documents")
-      .filter((q) => q.eq(q.field("userId"), userId))
       .filter((q) => q.eq(q.field("isArchived"), false))
       .order("desc")
       .collect();
-    return documents;
+    return documents.filter((document) => {
+      if (document.shared.length <= 1) {
+        return document.userId === userId;
+      } else {
+        return document;
+      }
+    });
   },
 });
 
@@ -176,7 +231,7 @@ export const getDocument = query({
     const userId = identity.subject;
     const document = await ctx.db.get(args.id);
     if (!document) return null;
-    if (document?.userId !== userId) throw new Error("Unauthorized");
+    if (document.shared.length <= 1 && document?.userId !== userId) return null;
 
     return document;
   },
@@ -191,13 +246,12 @@ export const modifyTitle = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
-    const userId = identity.subject;
     const document = await ctx.db.get(args.id);
     if (!document) return null;
-    if (document?.userId !== userId) throw new Error("Unauthorized");
 
     const updatedDocument = await ctx.db.patch(args.id, {
       title: args.title,
+      lastEditedBy: identity.pictureUrl,
     });
     return updatedDocument;
   },
@@ -209,26 +263,33 @@ export const getMoveTo = query({
   },
   handler: async (ctx, args) => {
     if (!args.id) throw new Error("No Id found");
+    const currDocument = await ctx.db.get(args.id);
+    if (!currDocument) return null;
+
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
     const userId = identity.subject;
-
-    // All doucments except the one that is to be moved
     let documents = await ctx.db
       .query("documents")
-      .filter((q) => q.eq(q.field("userId"), userId))
       .filter((q) => q.eq(q.field("isArchived"), false))
       .filter((q) => q.neq(q.field("_id"), args.id))
       .order("desc")
       .collect();
 
+    if (currDocument.shared.length <= 1) {
+      documents = documents.filter(
+        (q) => q.shared.length <= 1 && q.userId === userId
+      );
+    } else {
+      documents = documents.filter(
+        (q) =>
+          q.shared.length > 1 && q.shared.includes(identity.email as string)
+      );
+    }
+
     const set = new Set<Id<"documents">>();
     documents.forEach((document) => set.add(document._id));
-
-    // Document which is to be moved
-    const currDocument = await ctx.db.get(args.id);
-    if (!currDocument) throw new Error("Document not found");
 
     const findingAllSubChildren = async (parent: Doc<"documents">) => {
       const children = await ctx.db
@@ -283,16 +344,54 @@ export const getRootLevel = query({
   handler: async (ctx, args) => {
     if (!args.id) throw new Error("Id not found");
 
+    const document = await ctx.db.get(args.id);
+    if (!document) return null;
+    if (document.isArchived) throw new Error("Archived");
+
+    if (document.shared.length <= 1) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) throw new Error("Not authenticated");
+
+      const userId = identity.subject;
+      if (document.userId !== userId) throw new Error("Unauthorized");
+    }
+    return document.parentDocument;
+  },
+});
+
+export const addSharedMail = mutation({
+  args: {
+    id: v.id("documents"),
+    to: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!args.id) throw new Error("Id not found");
+
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
 
     const userId = identity.subject;
     const document = await ctx.db.get(args.id);
     if (!document) return null;
+    if (document.shared.includes(args.to)) return "Email already sent";
 
-    if (document.userId !== userId) throw new Error("Unauthorized");
+    const children = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("parentDocument"), document._id))
+      .order("desc")
+      .collect();
 
-    if (document.isArchived) throw new Error("Archived");
-    return document.parentDocument;
+    children.forEach(async (child) => {
+      await ctx.db.patch(child._id, {
+        parentDocument: document.parentDocument,
+      });
+    });
+
+    const updatedDocument = await ctx.db.patch(args.id, {
+      shared: [...document.shared, args.to],
+      parentDocument: undefined,
+    });
+    return updatedDocument;
+    return [];
   },
 });

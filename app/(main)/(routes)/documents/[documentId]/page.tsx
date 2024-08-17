@@ -15,7 +15,7 @@ const DocumentIdPage = () => {
     id: documentId as Id<"documents">,
   });
   const modifyTitle = useMutation(api.documents.modifyTitle);
-  const [title, setTitle] = useState<string>(document ? document.title : "");
+  const [title, setTitle] = useState<string>("");
 
   const handleTitleChange = (e: any) => {
     if (e.target.value === "") {

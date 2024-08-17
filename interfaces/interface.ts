@@ -38,3 +38,8 @@ export interface ConfirmModalProps {
 export interface BannerProps {
   documentId: Id<"documents">;
 }
+
+export interface IDocumentNavbar {
+  title: string;
+  editedBy: string;
+}
