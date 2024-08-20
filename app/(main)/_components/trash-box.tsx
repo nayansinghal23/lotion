@@ -43,8 +43,15 @@ const TrashBox = () => {
   };
 
   const onRemove = (documentId: Id<"documents">) => {
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
     const promise = remove({
       id: documentId,
+      notification: {
+        time: `${today.toString().slice(0, indexOf)}`,
+        title: ``,
+        url: ``,
+      },
     });
     toast.promise(promise, {
       loading: "Deleting note...",

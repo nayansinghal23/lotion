@@ -180,6 +180,11 @@ export const restore = mutation({
 export const remove = mutation({
   args: {
     id: v.id("documents"),
+    notification: v.object({
+      title: v.string(),
+      time: v.string(),
+      url: v.string(),
+    }),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -193,6 +198,28 @@ export const remove = mutation({
       existingDocument.userId !== userId
     )
       return null;
+
+    if (existingDocument.shared.length > 1) {
+      existingDocument.shared.forEach(async (email) => {
+        const existingUsers = await ctx.db
+          .query("users")
+          .filter((q) => q.eq(q.field("email"), email))
+          .collect();
+        if (existingUsers.length !== 0) {
+          const existingUser = existingUsers[0];
+          await ctx.db.patch(existingUser._id, {
+            notifications: [
+              {
+                time: args.notification.time,
+                title: `${existingDocument.title} has been deleted by ${existingUser.email}`,
+                url: identity.pictureUrl as string,
+              },
+              ...existingUser.notifications,
+            ],
+          });
+        }
+      });
+    }
 
     const document = await ctx.db.delete(args.id);
     return document;
@@ -363,17 +390,36 @@ export const addSharedMail = mutation({
   args: {
     id: v.id("documents"),
     to: v.string(),
+    fromNotification: v.object({
+      title: v.string(),
+      time: v.string(),
+      url: v.string(),
+    }),
+    toNotification: v.object({
+      title: v.string(),
+      time: v.string(),
+      url: v.string(),
+    }),
   },
   handler: async (ctx, args) => {
     if (!args.id) throw new Error("Id not found");
 
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) return "Not authenticated";
 
     const userId = identity.subject;
+    const email = identity.email;
+    if (!userId || !email) return "Not authenticated";
+
     const document = await ctx.db.get(args.id);
-    if (!document) return null;
-    if (document.shared.includes(args.to)) return "Email already sent";
+    if (!document) return "Document not found";
+    if (document.shared.includes(args.to)) return "Notification already sent";
+
+    const existingUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), email))
+      .collect();
+    if (existingUsers.length === 0) return "No user found";
 
     const children = await ctx.db
       .query("documents")
@@ -386,12 +432,36 @@ export const addSharedMail = mutation({
         parentDocument: document.parentDocument,
       });
     });
-
-    const updatedDocument = await ctx.db.patch(args.id, {
+    const existingUser = existingUsers[0];
+    await ctx.db.patch(existingUser._id, {
+      notifications: [args.fromNotification, ...existingUser.notifications],
+    });
+    await ctx.db.patch(args.id, {
       shared: [...document.shared, args.to],
       parentDocument: undefined,
     });
-    return updatedDocument;
-    return [];
+    const updatedDocument = await ctx.db.get(args.id);
+    const remainingUsers = updatedDocument?.shared.filter((q) => q !== email);
+    remainingUsers?.forEach(async (item) => {
+      const fromUsers = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), item))
+        .collect();
+      if (fromUsers.length !== 0) {
+        const fromUser = fromUsers[0];
+        await ctx.db.patch(fromUser._id, {
+          notifications: [args.toNotification, ...fromUser.notifications],
+        });
+      } else {
+        await ctx.db.insert("users", {
+          email: item,
+          name: "",
+          image: "",
+          userId: "",
+          notifications: [args.toNotification],
+        });
+      }
+    });
+    return "Success";
   },
 });

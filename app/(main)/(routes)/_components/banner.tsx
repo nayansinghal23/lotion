@@ -12,8 +12,14 @@ const Banner = ({ documentId }: BannerProps) => {
   const restore = useMutation(api.documents.restore);
 
   const onRemove = () => {
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
     const promise = remove({
       id: documentId,
+      notification: {
+        time: `${today.toString().slice(0, indexOf)}`,
+        title: ``,
+      },
     });
     toast.promise(promise, {
       loading: "Deleting note...",

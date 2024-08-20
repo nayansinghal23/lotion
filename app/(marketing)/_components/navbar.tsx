@@ -2,15 +2,34 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
 import useScrollTop from "@/hooks/use-scroll-top";
 import { cn } from "@/lib/utils";
-import { SignInButton, UserButton } from "@clerk/clerk-react";
-import { useConvexAuth } from "convex/react";
+import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { useConvexAuth, useMutation } from "convex/react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const Navbar = () => {
   const { isLoading, isAuthenticated } = useConvexAuth();
+  const { user } = useUser();
   const scrolled = useScrollTop();
+  const addNewUser = useMutation(api.users.addNewUser);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      addNewUser({
+        userId: user.id,
+        name: user.firstName
+          ? user.firstName
+          : user.fullName
+            ? user.fullName
+            : "",
+        email: user.emailAddresses[0].emailAddress,
+        image: user.imageUrl,
+      });
+    }
+  }, [isAuthenticated]);
 
   return (
     <div

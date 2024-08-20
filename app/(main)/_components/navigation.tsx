@@ -1,10 +1,10 @@
 import React from "react";
 import {
+  Bell,
   ChevronLeftIcon,
   Plus,
   PlusCircle,
   Search,
-  Settings,
   Share,
   Trash,
 } from "lucide-react";
@@ -25,8 +25,10 @@ import Item from "./item";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
 import SharedList from "./shared-list";
+import { useRouter } from "next/navigation";
 
 const Navigation = ({ minimize }: INavigation) => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const create = useMutation(api.documents.create);
 
@@ -57,7 +59,11 @@ const Navigation = ({ minimize }: INavigation) => {
           isSearch
           onClick={() => dispatch(toggleSearch(true))}
         />
-        <Item label="Settings" icon={Settings} onClick={() => {}} />
+        <Item
+          label="Notifications"
+          icon={Bell}
+          onClick={() => router.push("/notifications")}
+        />
         <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
       <div className="mt-4">

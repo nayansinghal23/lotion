@@ -16,4 +16,17 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_user_parent", ["userId", "parentDocument"]),
+  users: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    email: v.string(),
+    image: v.string(),
+    notifications: v.array(
+      v.object({
+        title: v.string(),
+        time: v.string(),
+        url: v.string(),
+      })
+    ),
+  }),
 });

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -14,8 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { IDocumentNavbar } from "@/interfaces/interface";
 import { useUser } from "@clerk/clerk-react";
-import { useParams, useRouter } from "next/navigation";
-import sendMail from "@/actions/mail";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -56,25 +55,31 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
     try {
       setError("");
       setIsSending(true);
-      const href: string = "http://localhost:3000/documents/" + document._id;
-      const mail = await sendMail(
-        email,
-        `👋 ${user.fullName} is ready to work with you on ${document.title} in Lotion`,
-        `<h1>Take a look at ${user.fullName}'s page <a href=${href}>${document.title}</a></h1>`,
-        user.emailAddresses[0].emailAddress
-      );
-      // const shared = addSharedMail({
-      //   id: document._id,
-      //   to: email,
-      // });
+      console.log("user : ", user);
+      const today = new Date();
+      const indexOf = today.toString().indexOf("GMT") - 1;
+      const shared = addSharedMail({
+        id: document._id,
+        to: email,
+        toNotification: {
+          time: `${today.toString().slice(0, indexOf)}`,
+          title: `👋 ${user.fullName} is ready to work with ${email} on ${document.title} in Lotion`,
+          url: user.imageUrl,
+        },
+        fromNotification: {
+          time: `${today.toString().slice(0, indexOf)}`,
+          title: `Shared ${document.title} to ${email}`,
+          url: user.imageUrl,
+        },
+      });
       setEmail("");
       setOpen(false);
       setIsSending(false);
-      // toast.promise(shared, {
-      //   loading: "Sharing document...",
-      //   success: "Document shared!",
-      //   error: "Failed to share document.",
-      // });
+      toast.promise(shared, {
+        loading: "Sharing document...",
+        success: "Document shared!",
+        error: "Failed to share document.",
+      });
     } catch (error) {
       setEmail("");
       setOpen(false);
