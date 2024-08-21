@@ -28,5 +28,6 @@ export default defineSchema({
         url: v.string(),
       })
     ),
+    unseen: v.number(),
   }),
 });

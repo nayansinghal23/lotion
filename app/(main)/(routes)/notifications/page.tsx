@@ -1,14 +1,20 @@
 "use client";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { useConvexAuth, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { Bell } from "lucide-react";
 
 import { api } from "@/convex/_generated/api";
+import { useEffect } from "react";
 
 const Notifications = () => {
   const { isAuthenticated } = useConvexAuth();
   const notifications = useQuery(api.users.getNotifications);
+  const toggleSeen = useMutation(api.users.toggleSeen);
+
+  useEffect(() => {
+    toggleSeen();
+  }, []);
 
   if (!isAuthenticated) return redirect("/");
 

@@ -7,6 +7,7 @@ export const create = mutation({
   args: {
     title: v.string(),
     parentDocument: v.optional(v.id("documents")),
+    time: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -16,6 +17,26 @@ export const create = mutation({
     if (args.parentDocument) {
       const parentDocument = await ctx.db.get(args.parentDocument);
       if (parentDocument && parentDocument.shared.length > 1) {
+        parentDocument.shared.forEach(async (email) => {
+          const existingUsers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("email"), email))
+            .collect();
+          if (existingUsers.length !== 0) {
+            const existingUser = existingUsers[0];
+            await ctx.db.patch(existingUser._id, {
+              unseen: existingUser.unseen + 1,
+              notifications: [
+                {
+                  time: args.time,
+                  title: `Child document of ${parentDocument.title} created by ${identity.email}`,
+                  url: `${identity.pictureUrl}`,
+                },
+                ...existingUser.notifications,
+              ],
+            });
+          }
+        });
         const document = await ctx.db.insert("documents", {
           title: args.title,
           parentDocument: args.parentDocument,
@@ -216,6 +237,7 @@ export const remove = mutation({
               },
               ...existingUser.notifications,
             ],
+            unseen: existingUser.unseen + 1,
           });
         }
       });
@@ -435,6 +457,7 @@ export const addSharedMail = mutation({
     const existingUser = existingUsers[0];
     await ctx.db.patch(existingUser._id, {
       notifications: [args.fromNotification, ...existingUser.notifications],
+      unseen: existingUser.unseen + 1,
     });
     await ctx.db.patch(args.id, {
       shared: [...document.shared, args.to],
@@ -451,6 +474,7 @@ export const addSharedMail = mutation({
         const fromUser = fromUsers[0];
         await ctx.db.patch(fromUser._id, {
           notifications: [args.toNotification, ...fromUser.notifications],
+          unseen: fromUser.unseen + 1,
         });
       } else {
         await ctx.db.insert("users", {
@@ -459,6 +483,7 @@ export const addSharedMail = mutation({
           image: "",
           userId: "",
           notifications: [args.toNotification],
+          unseen: 1,
         });
       }
     });

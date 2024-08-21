@@ -19,6 +19,7 @@ const Banner = ({ documentId }: BannerProps) => {
       notification: {
         time: `${today.toString().slice(0, indexOf)}`,
         title: ``,
+        url: ``,
       },
     });
     toast.promise(promise, {

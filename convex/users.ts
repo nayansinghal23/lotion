@@ -28,6 +28,7 @@ export const addNewUser = mutation({
         name: args.name,
         userId,
         notifications: [],
+        unseen: 0,
       });
       return user;
     }
@@ -58,5 +59,46 @@ export const getNotifications = query({
 
     const user = users[0];
     return user.notifications;
+  },
+});
+
+export const toggleSeen = mutation({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return "Unauthenticated";
+
+    const userId = identity.subject;
+    if (!userId) return "Not authenticated";
+
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .collect();
+    if (users.length === 0) return "User not found";
+
+    const user = users[0];
+    await ctx.db.patch(user._id, {
+      unseen: 0,
+    });
+    return "Seen updated";
+  },
+});
+
+export const displayUnseen = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return "Unauthenticated";
+
+    const userId = identity.subject;
+    if (!userId) return "Not authenticated";
+
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .collect();
+    if (users.length === 0) return "User not found";
+
+    const user = users[0];
+    return user.unseen;
   },
 });

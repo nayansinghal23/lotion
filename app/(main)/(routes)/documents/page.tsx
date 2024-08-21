@@ -11,8 +11,11 @@ const DocumentsPage = () => {
   const create = useMutation(api.documents.create);
 
   const onCreate = () => {
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
     const data = create({
       title: "Untitled",
+      time: `${today.toString().slice(0, indexOf)}`,
     });
     toast.promise(data, {
       loading: "Creating a new note...",

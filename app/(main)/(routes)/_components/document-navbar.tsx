@@ -55,7 +55,6 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
     try {
       setError("");
       setIsSending(true);
-      console.log("user : ", user);
       const today = new Date();
       const indexOf = today.toString().indexOf("GMT") - 1;
       const shared = addSharedMail({

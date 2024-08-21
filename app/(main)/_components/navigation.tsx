@@ -33,8 +33,11 @@ const Navigation = ({ minimize }: INavigation) => {
   const create = useMutation(api.documents.create);
 
   const handleCreate = () => {
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
     const promise = create({
       title: "Untitled",
+      time: `${today.toString().slice(0, indexOf)}`,
     });
     toast.promise(promise, {
       loading: "Creating a mew note...",

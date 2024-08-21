@@ -9,7 +9,7 @@ import {
   Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useUser } from "@clerk/clerk-react";
 
 import { cn } from "@/lib/utils";
@@ -44,6 +44,7 @@ const Item = ({
   const router = useRouter();
   const create = useMutation(api.documents.create);
   const archive = useMutation(api.documents.archive);
+  const unseen = useQuery(api.users.displayUnseen);
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
   const handleExpand = (event: MouseEvent<HTMLDivElement>) => {
@@ -54,15 +55,17 @@ const Item = ({
   const handleAddSubPages = (event: MouseEvent<HTMLDivElement>) => {
     if (!id) return;
     event.stopPropagation();
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
     const promise = create({
       title: "Untitled",
       parentDocument: id,
+      time: `${today.toString().slice(0, indexOf)}`,
     })
       .then((documentId: string) => {
         if (!expanded) {
           onExpand?.();
         }
-        // router.push(`/documents/${documentId}`);
         toast.promise(promise, {
           loading: "Creating a mew note...",
           success: "New note created!",
@@ -118,7 +121,9 @@ const Item = ({
       ) : (
         <Icon className="shrink-0 h-[18px] mr-2 text-muted-foreground" />
       )}
-      <span className="truncate">{label}</span>
+      <p className="truncate flex items-center justify-between w-full">
+        {label} {label === "Notifications" && <span>{unseen}</span>}
+      </p>
       {isSearch && (
         <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
           <span className="text-xs">⌘</span>K
