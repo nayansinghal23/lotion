@@ -306,6 +306,46 @@ export const modifyTitle = mutation({
   },
 });
 
+export const modifyIcon = mutation({
+  args: {
+    icon: v.string(),
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const document = await ctx.db.get(args.id);
+    if (!document) return null;
+
+    const updatedDocument = await ctx.db.patch(args.id, {
+      icon: args.icon,
+      lastEditedBy: identity.pictureUrl,
+    });
+    return updatedDocument;
+  },
+});
+
+export const modifyCoverImage = mutation({
+  args: {
+    coverImage: v.string(),
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const document = await ctx.db.get(args.id);
+    if (!document) return null;
+
+    const updatedDocument = await ctx.db.patch(args.id, {
+      coverImage: args.coverImage,
+      lastEditedBy: identity.pictureUrl,
+    });
+    return updatedDocument;
+  },
+});
+
 export const getMoveTo = query({
   args: {
     id: v.optional(v.id("documents")),

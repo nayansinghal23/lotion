@@ -1,10 +1,12 @@
 "use client";
 import { Inter } from "next/font/google";
+import { Provider } from "react-redux";
+import { Toaster } from "sonner";
 import "./globals.css";
+
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import ConvexProvider from "@/components/providers/convex-provider";
-import { Toaster } from "sonner";
-import { Provider } from "react-redux";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 import { store } from "@/redux/store";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,15 +26,17 @@ export default function RootLayout({
       <body className={inter.className}>
         <Provider store={store}>
           <ConvexProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Toaster position="bottom-center" />
-              {children}
-            </ThemeProvider>
+            <EdgeStoreProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Toaster position="bottom-center" />
+                {children}
+              </ThemeProvider>
+            </EdgeStoreProvider>
           </ConvexProvider>
         </Provider>
       </body>

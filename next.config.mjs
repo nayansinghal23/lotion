@@ -6,6 +6,10 @@ const nextConfig = {
         hostname: "img.clerk.com",
         protocol: "https",
       },
+      {
+        hostname: "files.edgestore.dev",
+        protocol: "https",
+      },
     ],
   },
 };

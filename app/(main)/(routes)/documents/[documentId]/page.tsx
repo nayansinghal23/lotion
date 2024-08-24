@@ -1,11 +1,13 @@
 "use client";
-import { useMutation, useQuery } from "convex/react";
-import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useMutation, useQuery } from "convex/react";
 
 import { api } from "@/convex/_generated/api";
-import Banner from "../../_components/banner";
 import { Id } from "@/convex/_generated/dataModel";
+import { Toolbar } from "@/components/toolbar";
+import Cover from "@/components/cover";
+import Banner from "../../_components/banner";
 
 const DocumentIdPage = () => {
   const params = useParams();
@@ -53,7 +55,14 @@ const DocumentIdPage = () => {
   return (
     <>
       {document.isArchived && <Banner documentId={document._id} />}
-      <div className="w-full h-full p-2 md:p-20">
+      <Cover
+        url={document.coverImage ? document.coverImage : ""}
+        id={document._id}
+      />
+      <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
+        <Toolbar initialData={document} />
+      </div>
+      <div className="w-full h-full p-2">
         <input
           className="text-3xl font-bold focus:outline-none dark:bg-[#1f1f1f] w-full"
           placeholder="Untitled"

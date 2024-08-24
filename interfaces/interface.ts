@@ -1,5 +1,6 @@
-import { LucideIcon } from "lucide-react";
 import React from "react";
+import { DropzoneOptions } from "react-dropzone";
+import { LucideIcon } from "lucide-react";
 
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
@@ -42,4 +43,37 @@ export interface BannerProps {
 export interface IDocumentNavbar {
   title: string;
   editedBy: string;
+}
+
+export interface ToolbarProps {
+  initialData: Doc<"documents">;
+  preview?: boolean;
+}
+
+export interface IconPickerProps {
+  onChange: (icon: string) => void;
+  children: React.ReactNode;
+  asChild?: boolean;
+}
+
+export interface CoverImageModalProps {
+  children: React.ReactNode;
+  asChild?: boolean;
+  id: Id<"documents">;
+}
+
+export interface SingleImageDropzoneProps {
+  width?: number;
+  height?: number;
+  className?: string;
+  value?: File | string;
+  onChange?: (file?: File) => void | Promise<void>;
+  disabled?: boolean;
+  dropzoneOptions?: Omit<DropzoneOptions, "disabled">;
+}
+
+export interface CoverProps {
+  url: string;
+  preview?: boolean;
+  id: Id<"documents">;
 }
