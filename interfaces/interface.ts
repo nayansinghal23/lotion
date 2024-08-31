@@ -77,3 +77,9 @@ export interface CoverProps {
   preview?: boolean;
   id: Id<"documents">;
 }
+
+export interface EditorProps {
+  onChange: (value: string) => void;
+  initialContent?: string;
+  editable?: boolean;
+}

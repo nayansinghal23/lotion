@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Toolbar } from "@/components/toolbar";
 import Cover from "@/components/cover";
+import Editor from "@/components/editor";
 import Banner from "../../_components/banner";
 
 const DocumentIdPage = () => {
@@ -16,8 +17,18 @@ const DocumentIdPage = () => {
   const document = useQuery(api.documents.getDocument, {
     id: documentId as Id<"documents">,
   });
+  const modifyContent = useMutation(api.documents.modifyContent);
   const modifyTitle = useMutation(api.documents.modifyTitle);
   const [title, setTitle] = useState<string>("");
+
+  const onChange = (content: string) => {
+    if (content && document) {
+      modifyContent({
+        id: document._id,
+        content,
+      });
+    }
+  };
 
   const handleTitleChange = (e: any) => {
     if (e.target.value === "") {
@@ -75,13 +86,7 @@ const DocumentIdPage = () => {
           }
           onChange={handleTitleChange}
         />
-        <div
-          id="contentEditableDiv"
-          className="w-full h-full"
-          spellCheck
-          contentEditable
-          suppressContentEditableWarning
-        ></div>
+        <Editor onChange={onChange} initialContent={document.content} />
       </div>
     </>
   );
