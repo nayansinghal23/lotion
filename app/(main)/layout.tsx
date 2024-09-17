@@ -2,6 +2,7 @@
 import React, { useRef, useState } from "react";
 import { useConvexAuth } from "convex/react";
 import { redirect } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   ImperativePanelHandle,
   Panel,
@@ -17,8 +18,10 @@ import MobileSidebar from "./_components/mobile-sidebar";
 import MoveTo from "./_components/move-to";
 import { useAppSelector } from "@/redux/hooks";
 import { moveToSelector } from "@/redux/moveToSlice";
+import { cn } from "@/lib/utils";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
   const selector = useAppSelector(moveToSelector);
   const panelRef = useRef<ImperativePanelHandle>(null);
   const [collapsible, setCollapsible] = useState<boolean>(false);
@@ -85,7 +88,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             <MenuIcon
               onClick={() => setShowMobileSidebar(true)}
               role="button"
-              className="h-6 w-6 text-muted-foreground"
+              className={cn(
+                "h-6 w-6 text-muted-foreground",
+                pathname !== "/documents" &&
+                  "min-h-[44px] border-b border-b-black dark:border-b-yellow-50"
+              )}
             />
           )}
         </div>

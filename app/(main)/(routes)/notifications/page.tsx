@@ -28,7 +28,7 @@ const Notifications = () => {
 
   return (
     <div className="w-full h-full flex flex-col gap-2">
-      <p className="p-4 font-semibold text-xl border-b border-b-black dark:border-b-white">
+      <p className="p-[7.5px] font-semibold text-xl border-b border-b-black dark:border-b-white">
         Notifications🔔
       </p>
       {Array.isArray(notifications) &&

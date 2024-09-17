@@ -24,9 +24,9 @@ export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   };
 
   return (
-    <div className="pl-[54px] group relative">
+    <div className="group relative">
       {!!initialData.icon && !preview && (
-        <div className="flex items-center gap-x-2 group/icon pt-6">
+        <div className="flex items-center gap-x-2 group/icon p-4">
           <IconPicker onChange={selectIcon}>
             <p className="text-6xl hover:opacity-75 transition">
               {initialData.icon}
@@ -43,34 +43,36 @@ export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         </div>
       )}
       {!!initialData.icon && preview && (
-        <p className="text-6xl pt-6">{initialData.icon}</p>
+        <p className="text-6xl p-4">{initialData.icon}</p>
       )}
-      <div className="flex gap-x-1 py-4">
-        {!initialData.icon && !preview && (
-          <IconPicker asChild onChange={selectIcon}>
-            <Button
-              className="text-muted-foreground text-xs"
-              variant="outline"
-              size="sm"
-            >
-              <Smile className="h-4 w-4 mr-2" />
-              Add icon
-            </Button>
-          </IconPicker>
-        )}
-        {!initialData.coverImage && !preview && (
-          <CoverImageModal asChild id={initialData._id}>
-            <Button
-              className="to-muted-foreground text-xs"
-              variant="outline"
-              size="sm"
-            >
-              <ImageIcon className="h-4 w-4 mr-2" />
-              Add cover
-            </Button>
-          </CoverImageModal>
-        )}
-      </div>
+      {(!initialData.icon || !initialData.coverImage) && !preview && (
+        <div className="flex gap-x-1 p-4">
+          {!initialData.icon && !preview && (
+            <IconPicker asChild onChange={selectIcon}>
+              <Button
+                className="text-muted-foreground text-xs"
+                variant="outline"
+                size="sm"
+              >
+                <Smile className="h-4 w-4 mr-2" />
+                Add icon
+              </Button>
+            </IconPicker>
+          )}
+          {!initialData.coverImage && !preview && (
+            <CoverImageModal asChild id={initialData._id}>
+              <Button
+                className="to-muted-foreground text-xs"
+                variant="outline"
+                size="sm"
+              >
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Add cover
+              </Button>
+            </CoverImageModal>
+          )}
+        </div>
+      )}
     </div>
   );
 };

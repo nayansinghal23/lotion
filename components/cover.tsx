@@ -23,13 +23,7 @@ const Cover = ({ url, preview, id }: CoverProps) => {
   };
 
   return (
-    <div
-      className={cn(
-        "relative w-full h-[35vh]",
-        !url && "h-[12vh]",
-        url && "bg-muted"
-      )}
-    >
+    <div className={cn("relative w-full", url && "h-[35vh] bg-muted")}>
       {!!url && (
         <Image src={url} alt="cover" fill priority className="object-cover" />
       )}

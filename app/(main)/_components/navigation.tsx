@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
   Bell,
   ChevronLeftIcon,
@@ -10,24 +11,25 @@ import {
 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/clerk-react";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { INavigation } from "@/interfaces/interface";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/convex/_generated/api";
+import { INavigation } from "@/interfaces/interface";
 import { useAppDispatch } from "@/redux/hooks";
 import { toggleSearch } from "@/redux/openSearchSlice";
-import UserItem from "./user-item";
 import Item from "./item";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
 import SharedList from "./shared-list";
-import { useRouter } from "next/navigation";
 
 const Navigation = ({ minimize }: INavigation) => {
+  const { user } = useUser();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const create = useMutation(api.documents.create);
@@ -55,7 +57,16 @@ const Navigation = ({ minimize }: INavigation) => {
         <ChevronLeftIcon className="h-6 w-6" />
       </div>
       <div>
-        <UserItem />
+        <div className="flex items-center justify-between text-sm p-3 w-full">
+          <div className="gap-x-2 flex items-center max-w-[80%]">
+            <Avatar className="h-5 w-5">
+              <AvatarImage src={user?.imageUrl} />
+            </Avatar>
+            <span className="text-start font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+              {user?.fullName}'s Jotion
+            </span>
+          </div>
+        </div>
         <Item
           label="Search"
           icon={Search}

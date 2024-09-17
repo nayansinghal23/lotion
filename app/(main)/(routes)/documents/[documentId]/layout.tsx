@@ -27,7 +27,9 @@ const DocumentIdLayout = ({ children }: { children: ReactNode }) => {
             : ""
         }
       />
-      {children}
+      <div className="absolute w-full left-0 md:relative dark:bg-[#1F1F1F]">
+        {children}
+      </div>
     </div>
   );
 };

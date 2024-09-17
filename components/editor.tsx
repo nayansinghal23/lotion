@@ -1,6 +1,14 @@
 import { useTheme } from "next-themes";
-import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
-import { useCreateBlockNote } from "@blocknote/react";
+import {
+  BlockNoteEditor,
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  PartialBlock,
+} from "@blocknote/core";
+import {
+  GridSuggestionMenuController,
+  useCreateBlockNote,
+} from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 
@@ -23,6 +31,12 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
       ? (JSON.parse(initialContent) as PartialBlock[])
       : undefined,
     uploadFile,
+    schema: BlockNoteSchema.create({
+      blockSpecs: {
+        ...defaultBlockSpecs,
+        audio: undefined as any,
+      },
+    }),
   });
 
   return (
@@ -34,7 +48,13 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         onChange={() => {
           onChange(JSON.stringify(editor.document, null, 2));
         }}
-      />
+      >
+        <GridSuggestionMenuController
+          triggerCharacter={":"}
+          columns={5}
+          minQueryLength={2}
+        />
+      </BlockNoteView>
     </div>
   );
 };

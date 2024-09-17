@@ -70,10 +70,10 @@ const DocumentIdPage = () => {
         url={document.coverImage ? document.coverImage : ""}
         id={document._id}
       />
-      <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
+      <div className="w-full">
         <Toolbar initialData={document} />
       </div>
-      <div className="w-full h-full p-2">
+      <div className="w-full h-full px-4">
         <input
           className="text-3xl font-bold focus:outline-none dark:bg-[#1f1f1f] w-full"
           placeholder="Untitled"

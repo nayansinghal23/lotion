@@ -1,14 +1,15 @@
 "use client";
+import { useEffect } from "react";
+import Image from "next/image";
+import { useConvexAuth, useMutation } from "convex/react";
+import { SignInButton, useUser } from "@clerk/clerk-react";
+
 import { ModeToggle } from "@/components/mode-toggle";
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import useScrollTop from "@/hooks/use-scroll-top";
 import { cn } from "@/lib/utils";
-import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
-import { useConvexAuth, useMutation } from "convex/react";
-import Link from "next/link";
-import { useEffect } from "react";
 
 const Navbar = () => {
   const { isLoading, isAuthenticated } = useConvexAuth();
@@ -50,12 +51,16 @@ const Navbar = () => {
             </SignInButton>
           </>
         )}
-        {isAuthenticated && !isLoading && (
+        {isAuthenticated && !isLoading && user && (
           <>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documents"></Link>
-            </Button>
-            <UserButton />
+            <Image
+              src={user.imageUrl}
+              alt="user-img"
+              className="object-contain rounded-full"
+              width={28}
+              height={28}
+              priority
+            />
           </>
         )}
         <ModeToggle />
