@@ -86,7 +86,11 @@ const DocumentIdPage = () => {
           }
           onChange={handleTitleChange}
         />
-        <Editor onChange={onChange} initialContent={document.content} />
+        <Editor
+          onChange={onChange}
+          initialContent={document.content}
+          shared={document.shared}
+        />
       </div>
     </>
   );

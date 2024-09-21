@@ -82,4 +82,5 @@ export interface EditorProps {
   onChange: (value: string) => void;
   initialContent?: string;
   editable?: boolean;
+  shared: string[];
 }

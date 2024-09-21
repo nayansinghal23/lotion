@@ -25,7 +25,14 @@ const Cover = ({ url, preview, id }: CoverProps) => {
   return (
     <div className={cn("relative w-full", url && "h-[35vh] bg-muted")}>
       {!!url && (
-        <Image src={url} alt="cover" fill priority className="object-cover" />
+        <Image
+          src={url}
+          alt="cover"
+          draggable={false}
+          fill
+          priority
+          className="object-cover"
+        />
       )}
       {url && !preview && (
         <div className="absolute bottom-5 right-5 flex items-center gap-x-2">
