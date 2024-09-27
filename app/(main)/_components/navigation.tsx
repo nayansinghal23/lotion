@@ -6,6 +6,7 @@ import {
   Plus,
   PlusCircle,
   Search,
+  Settings,
   Share,
   Trash,
 } from "lucide-react";
@@ -77,6 +78,11 @@ const Navigation = ({ minimize }: INavigation) => {
           label="Notifications"
           icon={Bell}
           onClick={() => router.push("/notifications")}
+        />
+        <Item
+          label="Settings"
+          icon={Settings}
+          onClick={() => router.push("/settings")}
         />
         <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
