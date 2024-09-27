@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { useConvexAuth } from "convex/react";
 import { SignOutButton } from "@clerk/clerk-react";
 
-import Appearance from "./_components/appearance";
+import Appearance from "../_components/appearance";
 import { Button } from "@/components/ui/button";
 
 const Settings = () => {
@@ -15,7 +15,7 @@ const Settings = () => {
 
   return (
     <div className="dark:bg-[#1F1F1F] h-full w-full">
-      <p className="p-3 border-b dark:border-b-white border-b-black">
+      <p className="p-[7.5px] border-b dark:border-b-white border-b-black min-h-11">
         Settings
       </p>
       <div className="p-3 flex flex-col gap-5 sm:gap-10 text-sm">
