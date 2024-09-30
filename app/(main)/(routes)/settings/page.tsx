@@ -4,6 +4,7 @@ import { useConvexAuth } from "convex/react";
 import { SignOutButton } from "@clerk/clerk-react";
 
 import Appearance from "../_components/appearance";
+import Unshare from "../_components/unshare";
 import { Button } from "@/components/ui/button";
 
 const Settings = () => {
@@ -20,8 +21,8 @@ const Settings = () => {
       </p>
       <div className="p-3 flex flex-col gap-5 sm:gap-10 text-sm">
         <Appearance />
-        {/* <p>Unshare</p>
-        <p>Language</p>
+        <Unshare />
+        {/* <p>Language</p>
         <p>Upgrade plan</p> */}
 
         <div className="flex items-center justify-between md:px-[10%]">

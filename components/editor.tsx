@@ -54,23 +54,14 @@ const Editor = ({
 
   const getMentionMenuItems = (editor: any): DefaultReactSuggestionItem[] => {
     return shared.map((email) => {
-      const arr: string[] = email.split("@");
-      arr.pop();
-      const user: string = arr.reduce(
-        (acc: string, curr: string, i: number) => {
-          if (i === arr.length - 1) return (acc += curr);
-          return (acc += curr + "@");
-        },
-        ""
-      );
       return {
-        title: user,
+        title: email,
         onItemClick: () => {
           editor.insertInlineContent([
             {
               type: "mention",
               props: {
-                user,
+                user: email,
               },
             },
             " ",

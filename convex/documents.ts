@@ -286,6 +286,36 @@ export const getDocument = query({
   },
 });
 
+export const getEmails = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) throw new Error("Not authenticated");
+
+      const userId = identity.subject;
+      const users = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .collect();
+
+      const document = await ctx.db.get(args.id);
+      if (!document) return "Document not found";
+      if (
+        (document.shared.length <= 1 && document?.userId !== userId) ||
+        !document.shared.includes(users[0].email)
+      )
+        return "Not authorized";
+
+      return document.shared;
+    } catch (error) {
+      return "Invalid document id";
+    }
+  },
+});
+
 export const modifyTitle = mutation({
   args: {
     title: v.string(),
@@ -548,5 +578,73 @@ export const addSharedMail = mutation({
       }
     });
     return "Success";
+  },
+});
+
+export const addUnsharedMail = mutation({
+  args: {
+    id: v.id("documents"),
+    emails: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (!args.id) throw new Error("Id not found");
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return "Not authenticated";
+
+    const document = await ctx.db.get(args.id);
+    if (!document) return "Document not found";
+    const updatedDocument = await ctx.db.patch(args.id, {
+      shared: args.emails,
+    });
+    const today = new Date();
+    const indexOf = today.toString().indexOf("GMT") - 1;
+    const not_shared: string[] = document.shared.filter(
+      (mail) => !args.emails.includes(mail)
+    );
+
+    for (let i = 0; i < args.emails.length; i++) {
+      const users = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.emails[i]))
+        .collect();
+      if (users.length > 0) {
+        const user = users[0];
+        await ctx.db.patch(user._id, {
+          notifications: [
+            {
+              time: `${today.toString().slice(0, indexOf)}`,
+              title: `Unshared ${document.title} by ${identity.email} from ${not_shared.join(", ")}`,
+              url: `${identity.pictureUrl}`,
+            },
+            ...user.notifications,
+          ],
+          unseen: user.unseen + 1,
+        });
+      }
+    }
+
+    for (let i = 0; i < not_shared.length; i++) {
+      const users = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), not_shared[i]))
+        .collect();
+      if (users.length > 0) {
+        const user = users[0];
+        await ctx.db.patch(user._id, {
+          notifications: [
+            {
+              time: `${today.toString().slice(0, indexOf)}`,
+              title: `Unshared ${document.title} by ${identity.email}`,
+              url: `${identity.pictureUrl}`,
+            },
+            ...user.notifications,
+          ],
+          unseen: user.unseen + 1,
+        });
+      }
+    }
+
+    return updatedDocument;
   },
 });

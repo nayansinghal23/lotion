@@ -67,7 +67,7 @@ const Item = ({
           onExpand?.();
         }
         toast.promise(promise, {
-          loading: "Creating a mew note...",
+          loading: "Creating a new note...",
           success: "New note created!",
           error: "Failed to create a new note.",
         });
