@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
+  Calendar,
   ChevronLeftIcon,
   Plus,
   PlusCircle,
@@ -83,6 +84,15 @@ const Navigation = ({ minimize }: INavigation) => {
           label="Settings"
           icon={Settings}
           onClick={() => router.push("/settings")}
+        />
+        <Item
+          label="Event"
+          icon={Calendar}
+          onClick={() =>
+            window.open(
+              "https://calendar.google.com/calendar/u/0/r/eventedit?date=DATE_START/DATE_END&text=TITLE&location=LOCATION&details=DESCRIPTION"
+            )
+          }
         />
         <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
       </div>
