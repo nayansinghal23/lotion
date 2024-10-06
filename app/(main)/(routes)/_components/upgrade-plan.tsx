@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 const UpgradePlan = () => {
-  const [show, setShow] = useState<boolean>(false);
+  const router = useRouter();
   const plans = [
     {
       name: "Free",
@@ -17,7 +18,7 @@ const UpgradePlan = () => {
     },
     {
       name: "Monthly",
-      charges: "$40 / month",
+      charges: "$50 / month",
       limits: [
         "Make 40 docs only",
         "Up to 50 shares per doc",
@@ -34,6 +35,31 @@ const UpgradePlan = () => {
       ],
     },
   ];
+
+  const [show, setShow] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handlePayment = async (charges: string) => {
+    try {
+      const amount: number = charges.includes("50") ? 50 : 400;
+      setLoading(true);
+      const response = await fetch("/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+      const data = await response.json();
+      if (data?.url) {
+        router.push(data?.url);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2 md:px-[10%]">
@@ -59,7 +85,15 @@ const UpgradePlan = () => {
                   <p key={index}>- {limit}</p>
                 ))}
               </div>
-              {name !== "Free" && <Button className="w-max">Pay</Button>}
+              {name !== "Free" && (
+                <Button
+                  className="w-max"
+                  onClick={() => handlePayment(charges)}
+                  disabled={loading}
+                >
+                  Pay
+                </Button>
+              )}
             </div>
           ))}
         </div>
