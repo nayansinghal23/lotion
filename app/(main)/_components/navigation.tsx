@@ -11,7 +11,7 @@ import {
   Share,
   Trash,
 } from "lucide-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
 
@@ -35,18 +35,37 @@ const Navigation = ({ minimize }: INavigation) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const create = useMutation(api.documents.create);
+  const updatingDocIds = useMutation(api.users.updatingDocIds);
+  const displaySubscription = useQuery(api.users.displaySubscription, {});
 
   const handleCreate = () => {
+    if (
+      !displaySubscription ||
+      typeof displaySubscription === "string" ||
+      displaySubscription.docIds.length >= displaySubscription.limits
+    ) {
+      toast.promise(new Promise((resolve, reject) => resolve("")), {
+        loading: "Creating a new note...",
+        success: "Limited exceeded. Visit plans.",
+        error: "Failed to create a new note.",
+      });
+      return;
+    }
     const today = new Date();
     const indexOf = today.toString().indexOf("GMT") - 1;
     const promise = create({
       title: "Untitled",
       time: `${today.toString().slice(0, indexOf)}`,
-    });
-    toast.promise(promise, {
-      loading: "Creating a mew note...",
-      success: "New note created!",
-      error: "Failed to create a new note.",
+    }).then((id) => {
+      updatingDocIds({
+        id,
+        type: "create",
+      });
+      toast.promise(promise, {
+        loading: "Creating a mew note...",
+        success: "New note created!",
+        error: "Failed to create a new note.",
+      });
     });
   };
 

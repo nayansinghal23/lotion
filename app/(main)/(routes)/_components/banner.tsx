@@ -9,6 +9,7 @@ import ConfirmModal from "@/components/modals/confirm-modal";
 const Banner = ({ documentId }: BannerProps) => {
   const router = useRouter();
   const remove = useMutation(api.documents.remove);
+  const updatingDocIds = useMutation(api.users.updatingDocIds);
   const restore = useMutation(api.documents.restore);
 
   const onRemove = () => {
@@ -21,6 +22,10 @@ const Banner = ({ documentId }: BannerProps) => {
         title: ``,
         url: ``,
       },
+    });
+    updatingDocIds({
+      id: documentId,
+      type: "remove",
     });
     toast.promise(promise, {
       loading: "Deleting note...",

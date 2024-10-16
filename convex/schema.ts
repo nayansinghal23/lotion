@@ -29,5 +29,21 @@ export default defineSchema({
       })
     ),
     unseen: v.number(),
+    subscription: v.object({
+      limits: v.number(),
+      docIds: v.array(
+        v.object({
+          id: v.id("documents"),
+          shared: v.number(),
+        })
+      ),
+      plans_purchased: v.array(
+        v.object({
+          plan_type: v.string(),
+          purchased_at: v.string(),
+          amount: v.string(),
+        })
+      ),
+    }),
   }),
 });

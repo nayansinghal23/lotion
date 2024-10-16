@@ -2,25 +2,45 @@
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const DocumentsPage = () => {
   const { user } = useUser();
   const create = useMutation(api.documents.create);
+  const updatingDocIds = useMutation(api.users.updatingDocIds);
+  const displaySubscription = useQuery(api.users.displaySubscription, {});
 
   const onCreate = () => {
+    if (
+      !displaySubscription ||
+      typeof displaySubscription === "string" ||
+      displaySubscription.docIds.length >= displaySubscription.limits
+    ) {
+      toast.promise(new Promise((resolve, reject) => resolve("")), {
+        loading: "Creating a new note...",
+        success: "Limited exceeded. Visit plans.",
+        error: "Failed to create a new note.",
+      });
+      return;
+    }
     const today = new Date();
     const indexOf = today.toString().indexOf("GMT") - 1;
     const data = create({
       title: "Untitled",
       time: `${today.toString().slice(0, indexOf)}`,
     });
-    toast.promise(data, {
-      loading: "Creating a new note...",
-      success: "New note created!",
-      error: "Failed to create a new note.",
+    data.then((id) => {
+      updatingDocIds({
+        id,
+        type: "create",
+      });
+      toast.promise(data, {
+        loading: "Creating a new note...",
+        success: "New note created!",
+        error: "Failed to create a new note.",
+      });
     });
   };
 

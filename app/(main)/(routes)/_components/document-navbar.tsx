@@ -26,6 +26,7 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
   const document = useQuery(api.documents.getDocument, {
     id: documentId as Id<"documents">,
   });
+  const displaySubscription = useQuery(api.users.displaySubscription, {});
   const addSharedMail = useMutation(api.documents.addSharedMail);
 
   const [email, setEmail] = useState<string>("");
@@ -50,6 +51,27 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
     }
     if (!validateEmail(email)) {
       setError("Email is incorrect!");
+      return;
+    }
+    if (!displaySubscription || typeof displaySubscription === "string") {
+      setError("Limited exceeded. Visit plans.");
+      return;
+    }
+    const docs = displaySubscription.docIds.filter(
+      (q) => q.id === document._id
+    );
+    const sharingLimit: number =
+      displaySubscription.limits === 5
+        ? 3
+        : displaySubscription.limits === 40
+          ? 50
+          : Infinity;
+    if (docs.length === 0) {
+      setError("Can share only your document.");
+      return;
+    }
+    if (docs[0].shared >= sharingLimit) {
+      setError("Limited exceeded. Visit plans.");
       return;
     }
     try {

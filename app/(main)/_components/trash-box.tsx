@@ -14,6 +14,7 @@ const TrashBox = () => {
   const router = useRouter();
   const params = useParams();
   const documents = useQuery(api.documents.getTrash);
+  const updatingDocIds = useMutation(api.users.updatingDocIds);
   const restore = useMutation(api.documents.restore);
   const remove = useMutation(api.documents.remove);
 
@@ -52,6 +53,10 @@ const TrashBox = () => {
         title: ``,
         url: ``,
       },
+    });
+    updatingDocIds({
+      id: documentId,
+      type: "remove",
     });
     toast.promise(promise, {
       loading: "Deleting note...",

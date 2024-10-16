@@ -10,29 +10,17 @@ const UpgradePlan = () => {
     {
       name: "Free",
       charges: "$0 / month",
-      limits: [
-        "Make 5 docs only",
-        "Up to 3 shares per doc",
-        "7 day page history",
-      ],
+      limits: ["Make 5 docs only", "Up to 3 shares per doc"],
     },
     {
       name: "Monthly",
       charges: "$50 / month",
-      limits: [
-        "Make 40 docs only",
-        "Up to 50 shares per doc",
-        "30 day page history",
-      ],
+      limits: ["Make 40 docs only", "Up to 50 shares per doc"],
     },
     {
       name: "Yearly",
       charges: "$400 billed yearly",
-      limits: [
-        "Make unlimited docs",
-        "Unlimited shares per doc",
-        "1 year page history",
-      ],
+      limits: ["Make unlimited docs", "Unlimited shares per doc"],
     },
   ];
 
@@ -77,8 +65,11 @@ const UpgradePlan = () => {
       {show && (
         <div className="w-full flex flex-col sm:flex-row gap-3">
           {plans.map(({ name, limits, charges }, index: number) => (
-            <div className="flex sm:flex-col w-full items-center sm:items-start gap-4">
-              <div key={index} className="flex flex-col flex-1 gap-2">
+            <div
+              className="flex sm:flex-col w-full items-center sm:items-start gap-4"
+              key={index}
+            >
+              <div className="flex flex-col flex-1 gap-2">
                 <p className="text-xl text-blue-500 font-medium">{name}</p>
                 <p>{charges}</p>
                 {limits.map((limit: string, index: number) => (

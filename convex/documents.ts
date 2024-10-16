@@ -546,6 +546,18 @@ export const addSharedMail = mutation({
     });
     const existingUser = existingUsers[0];
     await ctx.db.patch(existingUser._id, {
+      subscription: {
+        ...existingUser.subscription,
+        docIds: existingUser.subscription.docIds.map((q) => {
+          if (q.id === args.id) {
+            return {
+              ...q,
+              shared: q.shared + 1,
+            };
+          }
+          return q;
+        }),
+      },
       notifications: [args.fromNotification, ...existingUser.notifications],
       unseen: existingUser.unseen + 1,
     });
@@ -574,6 +586,11 @@ export const addSharedMail = mutation({
           userId: "",
           notifications: [args.toNotification],
           unseen: 1,
+          subscription: {
+            docIds: [],
+            limits: 5,
+            plans_purchased: [],
+          },
         });
       }
     });
@@ -594,8 +611,40 @@ export const addUnsharedMail = mutation({
 
     const document = await ctx.db.get(args.id);
     if (!document) return "Document not found";
+
+    const existingUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .collect();
+    if (existingUsers.length === 0) return "No user found";
+
+    const existingUser = existingUsers[0];
     const updatedDocument = await ctx.db.patch(args.id, {
       shared: args.emails,
+      parentDocument: undefined,
+    });
+    const childArr = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("parentDocument"), document._id))
+      .collect();
+    if (childArr.length > 0) {
+      await ctx.db.patch(childArr[0]._id, {
+        parentDocument: document.parentDocument,
+      });
+    }
+    await ctx.db.patch(existingUser._id, {
+      subscription: {
+        ...existingUser.subscription,
+        docIds: existingUser.subscription.docIds.map((q) => {
+          if (q.id === args.id) {
+            return {
+              ...q,
+              shared: args.emails.length,
+            };
+          }
+          return q;
+        }),
+      },
     });
     const today = new Date();
     const indexOf = today.toString().indexOf("GMT") - 1;

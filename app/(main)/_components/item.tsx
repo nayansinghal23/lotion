@@ -45,6 +45,8 @@ const Item = ({
   const create = useMutation(api.documents.create);
   const archive = useMutation(api.documents.archive);
   const unseen = useQuery(api.users.displayUnseen);
+  const updatingDocIds = useMutation(api.users.updatingDocIds);
+  const displaySubscription = useQuery(api.users.displaySubscription, {});
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
   const handleExpand = (event: MouseEvent<HTMLDivElement>) => {
@@ -54,6 +56,18 @@ const Item = ({
 
   const handleAddSubPages = (event: MouseEvent<HTMLDivElement>) => {
     if (!id) return;
+    if (
+      !displaySubscription ||
+      typeof displaySubscription === "string" ||
+      displaySubscription.docIds.length >= displaySubscription.limits
+    ) {
+      toast.promise(new Promise((resolve, reject) => resolve("")), {
+        loading: "Creating a new note...",
+        success: "Limited exceeded. Visit plans.",
+        error: "Failed to create a new note.",
+      });
+      return;
+    }
     event.stopPropagation();
     const today = new Date();
     const indexOf = today.toString().indexOf("GMT") - 1;
@@ -62,10 +76,14 @@ const Item = ({
       parentDocument: id,
       time: `${today.toString().slice(0, indexOf)}`,
     })
-      .then((documentId: string) => {
+      .then((documentId) => {
         if (!expanded) {
           onExpand?.();
         }
+        updatingDocIds({
+          id: documentId,
+          type: "create",
+        });
         toast.promise(promise, {
           loading: "Creating a new note...",
           success: "New note created!",
