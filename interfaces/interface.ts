@@ -37,7 +37,10 @@ export interface ConfirmModalProps {
 }
 
 export interface BannerProps {
+  title: string;
   documentId: Id<"documents">;
+  showRestoreBtn?: boolean;
+  showDeleteBtn?: boolean;
 }
 
 export interface IDocumentNavbar {

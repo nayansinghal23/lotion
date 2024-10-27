@@ -138,17 +138,21 @@ export const addSubscription = mutation({
             plan_type: args.plan_type,
             purchased_at: args.purchased_at,
             amount: args.amount,
+            status: true,
           },
-          ...user.subscription.plans_purchased,
+          ...user.subscription.plans_purchased.map((plan) => {
+            plan.status = false;
+            return plan;
+          }),
         ],
       },
       notifications: [
-        ...user.notifications,
         {
           title: `🥳Congrats on successfully upgrading to ${args.plan_type} plan by paying $${args.amount}.`,
           time: args.purchased_at,
           url: `${identity.pictureUrl}`,
         },
+        ...user.notifications,
       ],
       unseen: user.unseen + 1,
     });
@@ -223,5 +227,69 @@ export const updatingDocIds = mutation({
       },
     });
     return updatedUser;
+  },
+});
+
+export const paymentTimesUp = mutation({
+  args: {
+    time: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return "Unauthenticated";
+
+    const userId = identity.subject;
+    if (!userId) return "Not authenticated";
+
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .collect();
+    if (!users || users.length === 0) return "User not found";
+
+    const user = users[0];
+    user.subscription.docIds.forEach(async ({ id, shared }, index: number) => {
+      const documents = await ctx.db
+        .query("documents")
+        .filter((q) => q.eq(q.field("_id"), id))
+        .collect();
+      if (!documents || documents.length === 0) return "Document not found";
+      const document = documents[0];
+      if (index >= 5) {
+        await ctx.db.delete(document._id);
+      } else {
+        await ctx.db.patch(document._id, {
+          shared: document.shared.filter((doc, i) => {
+            if (i <= 2) return doc;
+          }),
+        });
+      }
+    });
+    await ctx.db.patch(user._id, {
+      subscription: {
+        plans_purchased: user.subscription.plans_purchased.map(
+          (plan, index) => {
+            if (index === 0) plan.status = false;
+            return plan;
+          }
+        ),
+        limits: 5,
+        docIds: user.subscription.docIds.slice(0, 5).map((docId) => {
+          if (docId.shared >= 3) {
+            docId.shared = 3;
+          }
+          return docId;
+        }),
+      },
+      notifications: [
+        {
+          time: args.time,
+          title: `Your ${user.subscription.plans_purchased[0].plan_type} subscription has been expired😥.`,
+          url: identity.pictureUrl as string,
+        },
+        ...user.notifications,
+      ],
+      unseen: user.unseen + 1,
+    });
   },
 });

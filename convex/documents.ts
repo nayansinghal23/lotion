@@ -213,7 +213,7 @@ export const remove = mutation({
 
     const userId = identity.subject;
     const existingDocument = await ctx.db.get(args.id);
-    if (!existingDocument) throw new Error("Not found");
+    if (!existingDocument) return "Not found";
     if (
       existingDocument.shared.length <= 1 &&
       existingDocument.userId !== userId

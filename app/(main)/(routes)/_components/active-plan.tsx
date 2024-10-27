@@ -10,7 +10,8 @@ const ActivePlan = () => {
     if (
       !displaySubscription ||
       typeof displaySubscription === "string" ||
-      displaySubscription.plans_purchased.length === 0
+      displaySubscription.plans_purchased.length === 0 ||
+      !displaySubscription.plans_purchased[0].status
     )
       return {
         plan_type: "Free",

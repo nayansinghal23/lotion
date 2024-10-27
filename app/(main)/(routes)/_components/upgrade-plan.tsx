@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "convex/react";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
 
 const UpgradePlan = () => {
   const router = useRouter();
@@ -23,11 +26,35 @@ const UpgradePlan = () => {
       limits: ["Make unlimited docs", "Unlimited shares per doc"],
     },
   ];
+  const displaySubscription = useQuery(api.users.displaySubscription, {});
 
   const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handlePayment = async (charges: string) => {
+    if (!displaySubscription || typeof displaySubscription === "string") return;
+    if (displaySubscription.plans_purchased.length > 0) {
+      const timeline = new Date(
+        displaySubscription.plans_purchased[0].purchased_at
+      );
+      if (displaySubscription.plans_purchased[0].plan_type !== "free") {
+        if (displaySubscription.plans_purchased[0].plan_type === "monthly") {
+          timeline.setDate(timeline.getDate() + 30);
+        } else if (
+          displaySubscription.plans_purchased[0].plan_type === "yearly"
+        ) {
+          timeline.setDate(timeline.getDate() + 365);
+        }
+        if (timeline >= new Date()) {
+          toast.promise(new Promise((resolve, reject) => resolve("")), {
+            loading: "Upgrading...",
+            success: `Already have ${displaySubscription.plans_purchased[0].plan_type} plan!`,
+            error: "Failed to purchase plan.",
+          });
+          return;
+        }
+      }
+    }
     try {
       const amount: number = charges.includes("50") ? 50 : 400;
       setLoading(true);

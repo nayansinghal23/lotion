@@ -42,6 +42,7 @@ export default defineSchema({
           plan_type: v.string(),
           purchased_at: v.string(),
           amount: v.string(),
+          status: v.boolean(),
         })
       ),
     }),
