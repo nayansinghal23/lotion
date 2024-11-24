@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { useConvexAuth, useMutation } from "convex/react";
 import { SignInButton, useUser } from "@clerk/clerk-react";
@@ -12,6 +13,8 @@ import useScrollTop from "@/hooks/use-scroll-top";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
+  const { t } = useTranslation();
+  const { log_in }: any = t("marketing");
   const { isLoading, isAuthenticated } = useConvexAuth();
   const { user } = useUser();
   const scrolled = useScrollTop();
@@ -46,7 +49,7 @@ const Navbar = () => {
           <>
             <SignInButton mode="modal">
               <Button variant="ghost" size="sm">
-                Log in
+                {log_in}
               </Button>
             </SignInButton>
           </>

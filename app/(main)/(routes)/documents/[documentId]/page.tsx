@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 
@@ -11,6 +12,8 @@ import Editor from "@/components/editor";
 import Banner from "../../_components/banner";
 
 const DocumentIdPage = () => {
+  const { t } = useTranslation();
+  const { back, not_exist }: any = t("documentId");
   const params = useParams();
   const router = useRouter();
   const documentId = params.documentId;
@@ -106,7 +109,7 @@ const DocumentIdPage = () => {
     return (
       <>
         <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-          <p>This content does not exist</p>
+          <p>{not_exist}</p>
           <div
             role="button"
             className="w-max cursor-pointer flex justify-center items-center rounded bg-[#2379E2] text-white px-3 py-2 text-sm font-medium"
@@ -114,7 +117,7 @@ const DocumentIdPage = () => {
               router.push("/documents");
             }}
           >
-            Back to my content
+            {back}
           </div>
         </div>
       </>

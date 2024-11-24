@@ -1,4 +1,5 @@
 import { ImageIcon, Smile, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "convex/react";
 
 import { ToolbarProps } from "@/interfaces/interface";
@@ -8,6 +9,8 @@ import { Button } from "./ui/button";
 import CoverImageModal from "./modals/cover-image-modal";
 
 export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
+  const { t } = useTranslation();
+  const { add_icon, add_cover }: any = t("documentId");
   const modifyIcon = useMutation(api.documents.modifyIcon);
   const selectIcon = (icon: string) => {
     modifyIcon({
@@ -55,7 +58,7 @@ export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
                 size="sm"
               >
                 <Smile className="h-4 w-4 mr-2" />
-                Add icon
+                {add_icon}
               </Button>
             </IconPicker>
           )}
@@ -67,7 +70,7 @@ export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
                 size="sm"
               >
                 <ImageIcon className="h-4 w-4 mr-2" />
-                Add cover
+                {add_cover}
               </Button>
             </CoverImageModal>
           )}

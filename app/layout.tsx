@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Provider } from "react-redux";
 import { Toaster } from "sonner";
 import "./globals.css";
+import "@/i18n/i18n.ts";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import ConvexProvider from "@/components/providers/convex-provider";

@@ -271,18 +271,23 @@ export const getSearch = query({
 
 export const getDocument = query({
   args: {
-    id: v.id("documents"),
+    id: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) throw new Error("Not authenticated");
 
-    const userId = identity.subject;
-    const document = await ctx.db.get(args.id);
-    if (!document) return null;
-    if (document.shared.length <= 1 && document?.userId !== userId) return null;
+      const userId = identity.subject;
+      const document = await ctx.db.get(args.id as Id<"documents">);
+      if (!document) return null;
+      if (document.shared.length <= 1 && document?.userId !== userId)
+        return null;
 
-    return document;
+      return document;
+    } catch (error) {
+      console.log(error);
+    }
   },
 });
 

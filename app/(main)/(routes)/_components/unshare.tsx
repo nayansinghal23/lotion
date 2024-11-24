@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const Unshare = () => {
+  const { t } = useTranslation();
+  const settings: any = t("settings");
   const [processing, setProcessing] = useState<boolean>(false);
   const [documentId, setDocumentId] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -82,22 +85,20 @@ const Unshare = () => {
   return (
     <div className="flex flex-col items-center gap-2 md:px-[10%]">
       <div className="w-full">
-        <p className="sm:font-semibold">Unshare</p>
-        <p className="hidden sm:block">
-          Take away the access of your document.
-        </p>
+        <p className="sm:font-semibold">{settings.unshare.title}</p>
+        <p className="hidden sm:block">{settings.unshare.description}</p>
       </div>
       <div className="w-full flex items-center justify-between gap-2">
         <Input
           type="text"
           className="w-[60%]"
-          placeholder="Document Id..."
+          placeholder={settings.unshare.placeholder}
           value={documentId}
           onChange={(e) => setDocumentId(e.target.value)}
           disabled={processing}
         />
         <Button onClick={displayEmails} disabled={processing}>
-          Find
+          {settings.unshare.button}
         </Button>
       </div>
       {error && <p className="text-red-400 w-full">{error}</p>}
@@ -125,7 +126,7 @@ const Unshare = () => {
             className="w-max mt-1"
             onClick={handleUnshare}
           >
-            Submit
+            {settings.unshare.submit}
           </Button>
         </div>
       )}

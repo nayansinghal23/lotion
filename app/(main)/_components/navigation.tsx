@@ -29,8 +29,21 @@ import Item from "./item";
 import DocumentList from "./document-list";
 import TrashBox from "./trash-box";
 import SharedList from "./shared-list";
+import { useTranslation } from "react-i18next";
 
 const Navigation = ({ minimize }: INavigation) => {
+  const { t } = useTranslation();
+  const {
+    name,
+    search,
+    notifications,
+    settings,
+    event,
+    new_page,
+    shared,
+    add_page,
+    trash,
+  }: any = t("navigation");
   const { user } = useUser();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -84,28 +97,28 @@ const Navigation = ({ minimize }: INavigation) => {
               <AvatarImage src={user?.imageUrl} />
             </Avatar>
             <span className="text-start font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-              {user?.fullName}'s Jotion
+              {user?.fullName}'s {name}
             </span>
           </div>
         </div>
         <Item
-          label="Search"
+          label={search}
           icon={Search}
           isSearch
           onClick={() => dispatch(toggleSearch(true))}
         />
         <Item
-          label="Notifications"
+          label={notifications}
           icon={Bell}
           onClick={() => router.push("/notifications")}
         />
         <Item
-          label="Settings"
+          label={settings}
           icon={Settings}
           onClick={() => router.push("/settings")}
         />
         <Item
-          label="Event"
+          label={event}
           icon={Calendar}
           onClick={() =>
             window.open(
@@ -113,18 +126,18 @@ const Navigation = ({ minimize }: INavigation) => {
             )
           }
         />
-        <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
+        <Item onClick={handleCreate} label={new_page} icon={PlusCircle} />
       </div>
       <div className="mt-4">
-        <Item onClick={() => {}} icon={Share} label="Shared" />
+        <Item onClick={() => {}} icon={Share} label={shared} />
         <SharedList />
       </div>
       <div className="mt-4">
-        <Item onClick={handleCreate} icon={Plus} label="Add a page" />
+        <Item onClick={handleCreate} icon={Plus} label={add_page} />
         <DocumentList />
         <Popover>
           <PopoverTrigger className="w-full mt-4">
-            <Item label="Trash" icon={Trash} />
+            <Item label={trash} icon={Trash} />
           </PopoverTrigger>
           <PopoverContent side="bottom" className="p-0 w-72">
             <TrashBox />

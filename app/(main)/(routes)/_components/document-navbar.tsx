@@ -17,8 +17,11 @@ import { IDocumentNavbar } from "@/interfaces/interface";
 import { useUser } from "@clerk/clerk-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useTranslation } from "react-i18next";
 
 const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
+  const { t } = useTranslation();
+  const { share }: any = t("documentId");
   const { user } = useUser();
   const router = useRouter();
   const params = useParams();
@@ -116,20 +119,18 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
         <Dialog open={open}>
           <DialogTrigger asChild onClick={() => setOpen(true)}>
             <span className="cursor-pointer hover:bg-primary/5 px-2 py-1 rounded">
-              Share
+              {share.button}
             </span>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Email address</DialogTitle>
-              <DialogDescription>
-                Type the email-id whom you want to share with.
-              </DialogDescription>
+              <DialogTitle>{share.title}</DialogTitle>
+              <DialogDescription>{share.description}</DialogDescription>
             </DialogHeader>
             <div className="flex items-center space-x-2">
               <input
                 type="email"
-                placeholder="example@gmail.com"
+                placeholder={share.placeholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-2 rounded-md"
@@ -144,7 +145,7 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
                 onClick={onSend}
                 disabled={isSending}
               >
-                Send
+                {share.send}
               </Button>
               <Button
                 type="button"
@@ -157,14 +158,14 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
                   setOpen(false);
                 }}
               >
-                Cancel
+                {share.cancel}
               </Button>
             </div>
           </DialogContent>
         </Dialog>
         {editedBy !== "" && (
           <div className="flex items-center gap-2">
-            <span>Edited by</span>
+            <span>{share.edited_by}</span>
             <Image
               src={editedBy}
               alt="user-img"

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "convex/react";
 
 import { api } from "@/convex/_generated/api";
@@ -9,6 +10,8 @@ const PaymentSuccess = ({
 }: {
   searchParams: { amount: string };
 }) => {
+  const { t } = useTranslation();
+  const { title, description }: any = t("paymentSuccess");
   const addSubscription = useMutation(api.users.addSubscription);
   const initialized = useRef(false);
 
@@ -28,8 +31,10 @@ const PaymentSuccess = ({
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-2">
-      <p className="text-3xl font-bold">Thank you😊</p>
-      <p>You successfully sent ${amount}</p>
+      <p className="text-3xl font-bold">{title}😊</p>
+      <p>
+        {description} ${amount}
+      </p>
     </div>
   );
 };

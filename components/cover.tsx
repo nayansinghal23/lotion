@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "convex/react";
 import { X } from "lucide-react";
 
@@ -9,6 +10,8 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { Button } from "./ui/button";
 
 const Cover = ({ url, preview, id }: CoverProps) => {
+  const { t } = useTranslation();
+  const { remove }: any = t("documentId");
   const { edgestore } = useEdgeStore();
   const modifyCoverImage = useMutation(api.documents.modifyCoverImage);
 
@@ -43,7 +46,7 @@ const Cover = ({ url, preview, id }: CoverProps) => {
             size="sm"
           >
             <X className="h-4 w-4 mr-2" />
-            Remove
+            {remove}
           </Button>
         </div>
       )}

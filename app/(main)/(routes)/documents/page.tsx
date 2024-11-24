@@ -1,12 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery } from "convex/react";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/clerk-react";
+
+import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/button";
 
 const DocumentsPage = () => {
+  const { t } = useTranslation();
+  const { button, titlePrefix, titleSuffix }: any = t("documents");
   const { user } = useUser();
   const create = useMutation(api.documents.create);
   const updatingDocIds = useMutation(api.users.updatingDocIds);
@@ -47,11 +51,11 @@ const DocumentsPage = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
       <h2 className="text-lg font-medium">
-        Welcome to {user?.firstName}&apos;s Jotion{" "}
+        {titlePrefix} {user?.firstName}&apos;s {titleSuffix}{" "}
       </h2>
       <Button onClick={onCreate}>
         <PlusCircle className="h-4 w-4 mr-2" />
-        Create a note
+        {button}
       </Button>
     </div>
   );
