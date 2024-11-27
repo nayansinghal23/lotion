@@ -26,6 +26,7 @@ const DocumentIdLayout = ({ children }: { children: ReactNode }) => {
             ? document.lastEditedBy
             : ""
         }
+        views={document.views ? document.views : []}
       />
       <div className="absolute w-full left-0 md:relative dark:bg-[#1F1F1F]">
         {children}

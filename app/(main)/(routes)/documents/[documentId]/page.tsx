@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
+import { useUser } from "@clerk/clerk-react";
 
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -13,6 +14,7 @@ import Banner from "../../_components/banner";
 
 const DocumentIdPage = () => {
   const { t } = useTranslation();
+  const { user } = useUser();
   const { back, not_exist }: any = t("documentId");
   const params = useParams();
   const router = useRouter();
@@ -22,6 +24,7 @@ const DocumentIdPage = () => {
   });
   const displaySubscription = useQuery(api.users.displaySubscription, {});
   const modifyContent = useMutation(api.documents.modifyContent);
+  const modifyViews = useMutation(api.documents.modifyViews);
   const modifyTitle = useMutation(api.documents.modifyTitle);
   const paymentTimesUp = useMutation(api.users.paymentTimesUp);
   const [title, setTitle] = useState<string>("");
@@ -101,6 +104,11 @@ const DocumentIdPage = () => {
   useEffect(() => {
     if (ref.current) {
       checkSubscription();
+      modifyViews({
+        id: documentId as string,
+        date: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
+        email: user?.emailAddresses[0].emailAddress as string,
+      });
       ref.current = false;
     }
   }, []);

@@ -1,4 +1,5 @@
-import { use, useState } from "react";
+import { useState } from "react";
+import { LineChart } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -18,10 +19,12 @@ import { useUser } from "@clerk/clerk-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useTranslation } from "react-i18next";
+import Chart from "./chart";
 
-const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
+const DocumentNavbar = ({ title, editedBy, views }: IDocumentNavbar) => {
   const { t } = useTranslation();
   const { share }: any = t("documentId");
+  const chart: any = t("chart");
   const { user } = useUser();
   const router = useRouter();
   const params = useParams();
@@ -113,8 +116,10 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
   };
 
   return (
-    <div className="min-h-[44px] border-b border-b-black dark:border-b-yellow-50 px-3 py-1 flex items-center justify-between">
-      <span>{title}</span>
+    <div className="min-h-[44px] border-b border-b-black dark:border-b-yellow-50 px-3 py-1 flex gap-1 items-center justify-between">
+      <span className="whitespace-nowrap overflow-hidden text-ellipsis flex-1">
+        {title}
+      </span>
       <div className="flex items-center gap-2">
         <Dialog open={open}>
           <DialogTrigger asChild onClick={() => setOpen(true)}>
@@ -177,6 +182,20 @@ const DocumentNavbar = ({ title, editedBy }: IDocumentNavbar) => {
           </div>
         )}
       </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <div className="flex items-center justify-center cursor-pointer hover:bg-primary/5 px-2 py-1 rounded">
+            <LineChart />
+          </div>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{chart.title}</DialogTitle>
+            <DialogDescription>{chart.description}</DialogDescription>
+          </DialogHeader>
+          <Chart views={views} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

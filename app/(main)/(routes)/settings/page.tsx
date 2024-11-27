@@ -19,7 +19,6 @@ const Settings = () => {
   if (!isAuthenticated) {
     return redirect("/");
   }
-  console.log(t("settings"));
 
   return (
     <div className="dark:bg-[#1F1F1F] h-full w-full">

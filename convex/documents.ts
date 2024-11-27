@@ -702,3 +702,85 @@ export const addUnsharedMail = mutation({
     return updatedDocument;
   },
 });
+
+export const modifyViews = mutation({
+  args: {
+    id: v.string(),
+    date: v.string(),
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) return "Not authenticated";
+
+      const document = await ctx.db.get(args.id as Id<"documents">);
+      if (!document) return "Document not found";
+
+      if (document.views) {
+        const filteredViews = document.views.filter(
+          (view) => view.date === args.date
+        );
+        if (filteredViews.length === 0) {
+          await ctx.db.patch(document._id, {
+            views: [
+              ...document.views,
+              {
+                date: args.date,
+                emails: [{ email: args.email, frequency: 1 }],
+              },
+            ],
+          });
+        } else {
+          const filteredEmails = filteredViews[0].emails.filter(
+            ({ email }) => email === args.email
+          );
+          if (filteredEmails.length === 0) {
+            await ctx.db.patch(document._id, {
+              views: document.views.map((view) => {
+                if (view.date === args.date) {
+                  return {
+                    ...view,
+                    emails: [
+                      ...view.emails,
+                      { email: args.email, frequency: 1 },
+                    ],
+                  };
+                }
+                return view;
+              }),
+            });
+          } else {
+            await ctx.db.patch(document._id, {
+              views: document.views.map((view) => {
+                if (view.date === args.date) {
+                  return {
+                    ...view,
+                    emails: view.emails.map((item) => {
+                      if (item.email === args.email) {
+                        return {
+                          ...item,
+                          frequency: item.frequency + 1,
+                        };
+                      }
+                      return item;
+                    }),
+                  };
+                }
+                return view;
+              }),
+            });
+          }
+        }
+      } else {
+        await ctx.db.patch(document._id, {
+          views: [
+            { date: args.date, emails: [{ email: args.email, frequency: 1 }] },
+          ],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+});

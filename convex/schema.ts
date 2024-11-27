@@ -13,6 +13,19 @@ export default defineSchema({
     isPublished: v.boolean(),
     shared: v.array(v.string()),
     lastEditedBy: v.optional(v.string()),
+    views: v.optional(
+      v.array(
+        v.object({
+          date: v.string(),
+          emails: v.array(
+            v.object({
+              email: v.string(),
+              frequency: v.number(),
+            })
+          ),
+        })
+      )
+    ),
   })
     .index("by_user", ["userId"])
     .index("by_user_parent", ["userId", "parentDocument"]),

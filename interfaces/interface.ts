@@ -43,9 +43,24 @@ export interface BannerProps {
   showDeleteBtn?: boolean;
 }
 
+interface IEmail {
+  email: string;
+  frequency: number;
+}
+
+interface IView {
+  date: string;
+  emails: IEmail[];
+}
+
 export interface IDocumentNavbar {
   title: string;
   editedBy: string;
+  views: IView[];
+}
+
+export interface IChart {
+  views: IView[];
 }
 
 export interface ToolbarProps {
