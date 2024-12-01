@@ -24,6 +24,7 @@ export default function RootLayout({
         name="description"
         content="Journey from Junior to Senior Frontend Developer"
       ></meta>
+      <meta name="referrer" content="no-referrer"></meta>
       <body className={inter.className}>
         <Provider store={store}>
           <ConvexProvider>
