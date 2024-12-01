@@ -5,6 +5,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export const POST = async (request: NextRequest) => {
   try {
+    if (request.method !== "POST") {
+      return NextResponse.json(
+        { error: "Method Not Allowed" },
+        { status: 405 }
+      );
+    }
     const { amount } = await request.json();
     const customer = await stripe.customers.create({});
     const checkoutSession = await stripe.checkout.sessions.create({
