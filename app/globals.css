@@ -94,8 +94,23 @@ body,
   }
 }
 
+.camera {
+  width: 100%;
+}
+
+.show-block {
+  width: 100%;
+  max-width: 350px;
+  display: block;
+  animation: show 0.7s forwards linear;
+}
+
 @media screen and (min-width: 400px) {
   #moveTo {
     width: 380px;
+  }
+
+  .camera {
+    width: 400px;
   }
 }

@@ -102,3 +102,7 @@ export interface EditorProps {
   editable?: boolean;
   shared: string[];
 }
+
+export interface IMeetingSetup {
+  setIsSetupCompleted: (value: boolean) => void;
+}
