@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LayoutList, Users } from "lucide-react";
 import {
   CallControls,
@@ -26,6 +26,7 @@ type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 
 const MeetingRoom = () => {
   const serachParams = useSearchParams();
+  const router = useRouter();
   const { useCallCallingState } = useCallStateHooks();
   const isPersonalRoom = !!serachParams.get("personal");
   const callingState = useCallCallingState();
@@ -33,8 +34,22 @@ const MeetingRoom = () => {
   const [showParticipants, setShowParticipants] = useState<boolean>(false);
 
   if (callingState !== CallingState.JOINED) {
+    if (callingState.toLowerCase() === "left") {
+      return (
+        <div
+          role="button"
+          className="w-max cursor-pointer flex justify-center items-center rounded bg-[#2379E2] text-white px-3 py-2 text-sm font-medium m-auto"
+          onClick={() => {
+            router.push("/documents");
+          }}
+        >
+          Back to my content
+        </div>
+      );
+    }
+
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center m-auto">
         <Spinner size="lg" />
       </div>
     );
@@ -56,7 +71,7 @@ const MeetingRoom = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden pt-4">
       <div className="relative flex size-full items-center justify-center">
-        <div className="flex size-full items-center max-w-[1000px]">
+        <div className="flex size-full items-center max-w-[1000px] text-white">
           <CallLayout />
         </div>
         <div
@@ -69,7 +84,9 @@ const MeetingRoom = () => {
       </div>
 
       <div className="fixed bottom-0 flex w-full items-center justify-center gap-5 flex-wrap">
-        <CallControls />
+        <div className="text-white">
+          <CallControls onLeave={() => router.push(`/documents`)} />
+        </div>
 
         <DropdownMenu>
           <div className="flex items-center">

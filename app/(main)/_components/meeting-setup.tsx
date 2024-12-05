@@ -28,7 +28,9 @@ const MeetingSetup = ({ setIsSetupCompleted }: IMeetingSetup) => {
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center gap-3">
       <h1 className="text-2xl font-bold">Setup</h1>
-      <VideoPreview className="camera text-center" />
+      <div className="camera">
+        <VideoPreview className="w-full" />
+      </div>
       <div className="flex h-16 items-center justify-center gap-3">
         <label className="flex items-center justify-center gap-2 font-medium">
           <input

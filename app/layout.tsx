@@ -2,13 +2,11 @@
 import { Inter } from "next/font/google";
 import { Provider } from "react-redux";
 import { Toaster } from "sonner";
-// import "@stream-io/video-react-sdk/dist/css/style.css";
 import "./globals.css";
 import "@/i18n/i18n.ts";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import ConvexProvider from "@/components/providers/convex-provider";
-import { StreamClientProvider } from "@/components/providers/stream-client-provider";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { store } from "@/redux/store";
 
@@ -31,17 +29,15 @@ export default function RootLayout({
         <Provider store={store}>
           <ConvexProvider>
             <EdgeStoreProvider>
-              <StreamClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <Toaster position="bottom-center" />
-                  {children}
-                </ThemeProvider>
-              </StreamClientProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Toaster position="bottom-center" />
+                {children}
+              </ThemeProvider>
             </EdgeStoreProvider>
           </ConvexProvider>
         </Provider>

@@ -19,6 +19,7 @@ import MoveTo from "./_components/move-to";
 import { useAppSelector } from "@/redux/hooks";
 import { moveToSelector } from "@/redux/moveToSlice";
 import { cn } from "@/lib/utils";
+import { StreamClientProvider } from "@/components/providers/stream-client-provider";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -52,59 +53,61 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div
-      className="h-full flex dark:bg-[#1F1F1F]"
-      style={selector.openMoveToModal ? { pointerEvents: "none" } : {}}
-    >
-      <PanelGroup autoSaveId="sidebar" direction="horizontal">
-        {!collapsible ? (
-          <>
-            <Panel
-              id="panel1"
-              order={1}
-              ref={panelRef}
-              defaultSize={24}
-              minSize={24}
-              maxSize={48}
-              className="hidden md:block"
-              collapsible={collapsible}
-            >
-              <Navigation minimize={minimize} />
-            </Panel>
-            <PanelResizeHandle className="hidden md:block w-[1px] bg-[#b7a0a0]" />
-          </>
-        ) : (
-          <div onClick={maximize}>
-            <MenuIcon
-              role="button"
-              className="h-6 w-6 text-muted-foreground hidden md:block"
-            />
-          </div>
-        )}
-        <div className="md:hidden relative">
-          {showMobileSidebar ? (
-            <MobileSidebar setShowMobileSidebar={setShowMobileSidebar} />
+    <StreamClientProvider>
+      <div
+        className="h-full flex dark:bg-[#1F1F1F]"
+        style={selector.openMoveToModal ? { pointerEvents: "none" } : {}}
+      >
+        <PanelGroup autoSaveId="sidebar" direction="horizontal">
+          {!collapsible ? (
+            <>
+              <Panel
+                id="panel1"
+                order={1}
+                ref={panelRef}
+                defaultSize={24}
+                minSize={24}
+                maxSize={48}
+                className="hidden md:block"
+                collapsible={collapsible}
+              >
+                <Navigation minimize={minimize} />
+              </Panel>
+              <PanelResizeHandle className="hidden md:block w-[1px] bg-[#b7a0a0]" />
+            </>
           ) : (
-            <MenuIcon
-              onClick={() => setShowMobileSidebar(true)}
-              role="button"
-              className={cn(
-                "h-6 w-6 text-muted-foreground",
-                pathname !== "/documents" &&
-                  "min-h-[44px] border-b border-b-black dark:border-b-yellow-50"
-              )}
-            />
+            <div onClick={maximize}>
+              <MenuIcon
+                role="button"
+                className="h-6 w-6 text-muted-foreground hidden md:block"
+              />
+            </div>
           )}
-        </div>
-        <Panel id="panel2" order={2}>
-          <main className="flex-1 h-full overflow-y-auto">
-            <SearchCommand />
-            {children}
-          </main>
-        </Panel>
-      </PanelGroup>
-      {selector.openMoveToModal && <MoveTo />}
-    </div>
+          <div className="md:hidden relative">
+            {showMobileSidebar ? (
+              <MobileSidebar setShowMobileSidebar={setShowMobileSidebar} />
+            ) : (
+              <MenuIcon
+                onClick={() => setShowMobileSidebar(true)}
+                role="button"
+                className={cn(
+                  "h-6 w-6 text-muted-foreground",
+                  pathname !== "/documents" &&
+                    "min-h-[44px] border-b border-b-black dark:border-b-yellow-50"
+                )}
+              />
+            )}
+          </div>
+          <Panel id="panel2" order={2}>
+            <main className="flex-1 h-full overflow-y-auto">
+              <SearchCommand />
+              {children}
+            </main>
+          </Panel>
+        </PanelGroup>
+        {selector.openMoveToModal && <MoveTo />}
+      </div>
+    </StreamClientProvider>
   );
 };
 

@@ -1,11 +1,4 @@
 "use client";
-/**
- - Middlewares
- - Language Localization
- - Colors & Bg colors on dark & light mode
- http://localhost:3000/meeting/ee258221-5419-48fa-86c6-c5088ba13a96
- */
-
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useUser } from "@clerk/clerk-react";
@@ -19,7 +12,7 @@ import { useGetCallById } from "@/hooks/use-get-call-by-id";
 const Meeting = () => {
   const params = useParams();
   const meetingId = params.meetingId;
-  const { user, isLoaded } = useUser();
+  const { isLoaded } = useUser();
   const { call, isCallLoading } = useGetCallById(meetingId);
   const [isSetupCompleted, setIsSetupCompleted] = useState<boolean>(false);
 
@@ -32,9 +25,9 @@ const Meeting = () => {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full flex justify-center items-center">
       <StreamCall call={call}>
-        <StreamTheme>
+        <StreamTheme className="w-full">
           {!isSetupCompleted ? (
             <MeetingSetup setIsSetupCompleted={setIsSetupCompleted} />
           ) : (
