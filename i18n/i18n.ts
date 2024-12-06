@@ -29,6 +29,9 @@ import { documentIdHindi } from "./hi/documentId";
 import { chartEnglish } from "./en/chart";
 import { chartFrench } from "./fr/chart";
 import { chartHindi } from "./hi/chart";
+import { meetingEnglish } from "./en/meeting";
+import { meetingFrench } from "./fr/meeting";
+import { meetingHindi } from "./hi/meeting";
 
 i18n
   .use(LanguageDetector)
@@ -49,6 +52,7 @@ i18n
           navigation: navigationEnglish,
           documentId: documentIdEnglish,
           chart: chartEnglish,
+          meeting: meetingEnglish,
         },
       },
       fr: {
@@ -62,6 +66,7 @@ i18n
           navigation: navigationFrench,
           documentId: documentIdFrench,
           chart: chartFrench,
+          meeting: meetingFrench,
         },
       },
       hi: {
@@ -75,6 +80,7 @@ i18n
           navigation: navigationHindi,
           documentId: documentIdHindi,
           chart: chartHindi,
+          meeting: meetingHindi,
         },
       },
     },

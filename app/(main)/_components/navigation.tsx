@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -10,10 +10,12 @@ import {
   Settings,
   Share,
   Trash,
+  Video,
 } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 
 import {
   Popover,
@@ -44,12 +46,20 @@ const Navigation = ({ minimize }: INavigation) => {
     add_page,
     trash,
   }: any = t("navigation");
+  const { title }: any = t("meeting");
   const { user } = useUser();
+  const client = useStreamVideoClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const create = useMutation(api.documents.create);
   const updatingDocIds = useMutation(api.users.updatingDocIds);
   const displaySubscription = useQuery(api.users.displaySubscription, {});
+  const [values, setValues] = useState({
+    dateTime: new Date(),
+    description: "",
+    link: "",
+  });
+  const [callDetails, setCallDetails] = useState<Call>();
 
   const handleCreate = () => {
     if (
@@ -80,6 +90,56 @@ const Navigation = ({ minimize }: INavigation) => {
         error: "Failed to create a new note.",
       });
     });
+  };
+
+  const createMeeting = async () => {
+    if (!client || !user) return;
+    try {
+      const id = crypto.randomUUID();
+      const call = client.call("default", id);
+
+      if (!call) return;
+
+      const startsAt =
+        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const description = values.description || "Instant meeting";
+
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            description,
+          },
+        },
+      });
+
+      setCallDetails(call);
+      toast.promise(
+        new Promise((resolve, reject) => {
+          resolve("Meet scheduled!");
+        }),
+        {
+          loading: "Scheduling meet...",
+          success: "Meet scheduled!",
+          error: "Failed to schedule meet.",
+        }
+      );
+      if (!values.description) {
+        router.push(`/meeting/${call.id}`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reject("Failed to schedule meet.");
+        }),
+        {
+          loading: "Scheduling meet...",
+          success: "Meet scheduled!",
+          error: "Failed to schedule meet.",
+        }
+      );
+    }
   };
 
   return (
@@ -126,6 +186,7 @@ const Navigation = ({ minimize }: INavigation) => {
             )
           }
         />
+        <Item label={title} icon={Video} onClick={createMeeting} />
         <Item onClick={handleCreate} label={new_page} icon={PlusCircle} />
       </div>
       <div className="mt-4">
