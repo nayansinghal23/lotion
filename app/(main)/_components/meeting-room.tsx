@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { t } from "i18next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LayoutList, Users } from "lucide-react";
 import {
@@ -27,6 +28,7 @@ type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 const MeetingRoom = () => {
   const serachParams = useSearchParams();
   const router = useRouter();
+  const { back }: any = t("meeting");
   const { useCallCallingState } = useCallStateHooks();
   const isPersonalRoom = !!serachParams.get("personal");
   const callingState = useCallCallingState();
@@ -43,7 +45,7 @@ const MeetingRoom = () => {
             router.push("/documents");
           }}
         >
-          Back to my content
+          {back}
         </div>
       );
     }

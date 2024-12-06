@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { t } from "i18next";
 import { useCall, useCallStateHooks } from "@stream-io/video-react-sdk";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
+  const { endAll }: any = t("meeting");
   const { useLocalParticipant } = useCallStateHooks();
   const localParticipant = useLocalParticipant();
 
@@ -25,7 +27,7 @@ const EndCallButton = () => {
       }}
       className="bg-red-500 text-white"
     >
-      End call for everyone
+      {endAll}
     </Button>
   );
 };

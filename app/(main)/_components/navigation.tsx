@@ -46,6 +46,7 @@ const Navigation = ({ minimize }: INavigation) => {
     add_page,
     trash,
   }: any = t("navigation");
+  const { title }: any = t("meeting");
   const { user } = useUser();
   const client = useStreamVideoClient();
   const router = useRouter();
@@ -185,7 +186,7 @@ const Navigation = ({ minimize }: INavigation) => {
             )
           }
         />
-        <Item label="Meeting" icon={Video} onClick={createMeeting} />
+        <Item label={title} icon={Video} onClick={createMeeting} />
         <Item onClick={handleCreate} label={new_page} icon={PlusCircle} />
       </div>
       <div className="mt-4">

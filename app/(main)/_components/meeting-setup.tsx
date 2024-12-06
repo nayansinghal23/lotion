@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { t } from "i18next";
 import {
   DeviceSettings,
   useCall,
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { IMeetingSetup } from "@/interfaces/interface";
 
 const MeetingSetup = ({ setIsSetupCompleted }: IMeetingSetup) => {
+  const { setup }: any = t("meeting");
   const [isMicCamToggledOn, setIsMicCamToggledOn] = useState<boolean>(false);
   const call = useCall();
 
@@ -27,7 +29,7 @@ const MeetingSetup = ({ setIsSetupCompleted }: IMeetingSetup) => {
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center gap-3">
-      <h1 className="text-2xl font-bold">Setup</h1>
+      <h1 className="text-2xl font-bold">{setup.title}</h1>
       <div className="camera">
         <VideoPreview className="w-full" />
       </div>
@@ -38,7 +40,7 @@ const MeetingSetup = ({ setIsSetupCompleted }: IMeetingSetup) => {
             checked={isMicCamToggledOn}
             onChange={(e) => setIsMicCamToggledOn(e.target.checked)}
           />
-          Join with mic and camera off
+          {setup.checkbox}
         </label>
         <DeviceSettings />
       </div>
@@ -49,7 +51,7 @@ const MeetingSetup = ({ setIsSetupCompleted }: IMeetingSetup) => {
           setIsSetupCompleted(true);
         }}
       >
-        Join meeting
+        {setup.join}
       </Button>
     </div>
   );
