@@ -31,9 +31,11 @@ const Chart = ({ views }: IChart) => {
           {
             label: "Total views",
             data: views.map((view) => {
-              return view.emails.reduce(
-                (acc: number, { frequency }) => (acc += frequency),
-                0
+              return Math.round(
+                view.emails.reduce(
+                  (acc: number, { frequency }) => (acc += frequency),
+                  0
+                ) / 2
               );
             }),
             borderColor: "rgb(75, 192, 192)",
