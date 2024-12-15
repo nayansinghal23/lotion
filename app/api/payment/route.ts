@@ -17,8 +17,8 @@ export const POST = async (request: NextRequest) => {
       payment_method_types: ["card"],
       customer: customer.id,
       mode: "payment",
-      success_url: `http://localhost:3000/payment-success?amount=${amount}`,
-      cancel_url: "http://localhost:3000/payment-cancel",
+      success_url: `https://lotion-zeta.vercel.app/payment-success?amount=${amount}`,
+      cancel_url: "https://lotion-zeta.vercel.app/payment-cancel",
       line_items: [
         {
           quantity: 1,
