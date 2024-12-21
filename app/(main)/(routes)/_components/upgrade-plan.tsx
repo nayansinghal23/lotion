@@ -69,6 +69,9 @@ const UpgradePlan = () => {
         body: JSON.stringify({ amount }),
       });
       const data = await response.json();
+      if (data.amount) {
+        localStorage.setItem("amount", data.amount);
+      }
       if (data?.url) {
         router.push(data?.url);
       }

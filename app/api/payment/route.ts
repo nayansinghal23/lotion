@@ -32,7 +32,10 @@ export const POST = async (request: NextRequest) => {
         },
       ],
     });
-    return NextResponse.json({ url: checkoutSession.url }, { status: 200 });
+    return NextResponse.json(
+      { url: checkoutSession.url, amount },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { error: `Internal Server Error : ${error}` },
