@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
+  Bot,
   Calendar,
   ChevronLeftIcon,
   Plus,
@@ -187,6 +188,7 @@ const Navigation = ({ minimize }: INavigation) => {
           }
         />
         <Item label={title} icon={Video} onClick={createMeeting} />
+        <Item label="AI" icon={Bot} onClick={() => router.push("/ai")} />
         <Item onClick={handleCreate} label={new_page} icon={PlusCircle} />
       </div>
       <div className="mt-4">
