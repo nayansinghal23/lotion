@@ -30,7 +30,7 @@
     "chart.js": "^4.4.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
+    "cmdk": "^1.0.4",
     "convex": "^1.13.0",
     "emoji-picker-react": "^4.11.1",
     "i18next": "^24.0.0",
