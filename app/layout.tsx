@@ -10,7 +10,7 @@ import ConvexProvider from "@/components/providers/convex-provider";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { store } from "@/redux/store";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: 'optional', fallback: ["Arial", "sans-serif"], adjustFontFallback: true, });
 
 export default function RootLayout({
   children,
