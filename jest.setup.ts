@@ -8,7 +8,8 @@ jest.mock('next/navigation', () => ({
 }))
 
 jest.mock('convex/react', () => ({
-    useConvexAuth: jest.fn()
+    useConvexAuth: jest.fn(),
+    useMutation: jest.fn(),
 }))
 
 jest.mock('react-i18next', () => ({
@@ -24,4 +25,11 @@ jest.mock('@clerk/clerk-react', () => ({
     SignInButton: jest.fn(({ children, ...props }: { children: ReactNode }) => {
         return createElement('div', { "data-testid": "sign-in-button", ...props }, children)
     }),
+    useUser: jest.fn(),
+}))
+
+jest.mock('next-themes', () => ({
+    useTheme: jest.fn(() => ({
+        setTheme: jest.fn(),
+    })),
 }))
