@@ -9,7 +9,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Toolbar } from "@/components/toolbar";
 import Cover from "@/components/cover";
-import Editor from "@/components/editor";
+import EditorWrapper from "@/components/editor-wrapper";
 import Banner from "../../_components/banner";
 
 const DocumentIdPage = () => {
@@ -168,7 +168,7 @@ const DocumentIdPage = () => {
           }
           onChange={handleTitleChange}
         />
-        <Editor
+        <EditorWrapper
           onChange={onChange}
           initialContent={document.content}
           shared={document.shared}
